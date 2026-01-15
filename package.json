@@ -1,0 +1,90 @@
+{
+  "name": "ai-human-review-comments",
+  "displayName": "AI × Human Review Comments",
+  "description": "A unified review workflow for managing human-generated comments and AI responses",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "aiReviewComments.addComment",
+        "title": "Add Comment",
+        "category": "AI Review"
+      },
+      {
+        "command": "aiReviewComments.installMCPEverywhere",
+        "title": "Install MCP Everywhere",
+        "category": "AI Review"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "aiReviewComments.reviewPanel",
+          "name": "Review Comments",
+          "when": "true"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aiReviewComments",
+          "title": "AI Review Comments",
+          "icon": "$(comment-discussion)"
+        }
+      ]
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "aiReviewComments.addComment",
+          "group": "aiReview",
+          "when": "editorHasSelection || editorTextFocus"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "aiReviewComments.addComment",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "aiReviewComments.installMCPEverywhere"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "@types/mocha": "^10.0.1",
+    "@types/glob": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.4",
+    "mocha": "^10.2.0",
+    "glob": "^8.0.3",
+    "@vscode/test-electron": "^2.2.0",
+    "@vscode/vsce": "^2.15.0"
+  },
+  "dependencies": {}
+}
