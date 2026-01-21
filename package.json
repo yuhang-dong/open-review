@@ -16,52 +16,141 @@
   "contributes": {
     "commands": [
       {
-        "command": "aiReviewComments.addComment",
-        "title": "Add Comment",
-        "category": "AI Review"
+        "command": "openReview.createNote",
+        "title": "Create Comment",
+        "category": "Open Review"
       },
       {
-        "command": "aiReviewComments.installMCPEverywhere",
-        "title": "Install MCP Everywhere",
-        "category": "AI Review"
+        "command": "openReview.replyNote",
+        "title": "Reply Note",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.startDraft",
+        "title": "Start Draft",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.finishDraft",
+        "title": "Finish Draft",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.deleteNoteComment",
+        "title": "Delete Note Comment",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.deleteNote",
+        "title": "Delete Comment",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.cancelsaveNote",
+        "title": "Cancel Save Note",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.saveNote",
+        "title": "Save Note",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.editNote",
+        "title": "Edit Note",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.dispose",
+        "title": "Dispose Note",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.exportAllThread",
+        "title": "Export Comments",
+        "category": "Open Review",
+        "icon": "$(export)"
       }
     ],
-    "views": {
-      "explorer": [
-        {
-          "id": "aiReviewComments.reviewPanel",
-          "name": "Review Comments",
-          "when": "true"
-        }
-      ]
-    },
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "aiReviewComments",
-          "title": "AI Review Comments",
-          "icon": "$(comment-discussion)"
-        }
-      ]
-    },
     "menus": {
-      "editor/context": [
+			"commandPalette": [
+				{
+					"command": "openReview.createNote",
+					"when": "false"
+				},
+				{
+					"command": "openReview.replyNote",
+					"when": "false"
+				},
+				{
+					"command": "openReview.deleteNote",
+					"when": "false"
+				},
+				{
+					"command": "openReview.deleteNoteComment",
+					"when": "false"
+				}
+			],
+			"comments/commentThread/title": [
+				{
+					"command": "openReview.deleteNote",
+					"group": "navigation",
+					"when": "commentController == comment-sample && !commentThreadIsEmpty"
+				}
+			],
+			"comments/commentThread/context": [
+				{
+					"command": "openReview.createNote",
+					"group": "inline",
+					"when": "commentController == comment-sample && commentThreadIsEmpty"
+				},
+				{
+					"command": "openReview.replyNote",
+					"group": "inline",
+					"when": "commentController == comment-sample && !commentThreadIsEmpty"
+				},
+				{
+					"command": "openReview.startDraft",
+					"group": "inline",
+					"when": "commentController == comment-sample && commentThreadIsEmpty"
+				},
+				{
+					"command": "openReview.finishDraft",
+					"group": "inline",
+					"when": "commentController == comment-sample && commentThread == draft"
+				}
+			],
+			"comments/comment/title": [
+				{
+					"command": "openReview.editNote",
+					"group": "group@1",
+					"when": "commentController == comment-sample"
+				},
+				{
+					"command": "openReview.deleteNoteComment",
+					"group": "group@2",
+					"when": "commentController == comment-sample && comment == canDelete"
+				}
+			],
+			"comments/comment/context": [
+				{
+					"command": "openReview.cancelsaveNote",
+					"group": "inline@1",
+					"when": "commentController == comment-sample"
+				},
+				{
+					"command": "openReview.saveNote",
+					"group": "inline@2",
+					"when": "commentController == comment-sample"
+				}
+			],
+      "editor/title": [
         {
-          "command": "aiReviewComments.addComment",
-          "group": "aiReview",
-          "when": "editorHasSelection || editorTextFocus"
-        }
-      ],
-      "commandPalette": [
-        {
-          "command": "aiReviewComments.addComment",
-          "when": "editorIsOpen"
-        },
-        {
-          "command": "aiReviewComments.installMCPEverywhere"
+          "command": "openReview.exportAllThread",
+          "group": "navigation@100"
         }
       ]
-    }
+		}
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

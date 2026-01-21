@@ -1,54 +1,156 @@
 import * as vscode from 'vscode';
+import { CONTROLLER_ID, CONTROLLER_LABEL } from './constants/common';
+
+let commentId = 1;
+
+class NoteComment implements vscode.Comment {
+	id: number;
+	label: string | undefined;
+	savedBody: string | vscode.MarkdownString; // for the Cancel button
+	constructor(
+		public body: string | vscode.MarkdownString,
+		public mode: vscode.CommentMode,
+		public author: vscode.CommentAuthorInformation,
+		public parent?: vscode.CommentThread,
+		public contextValue?: string
+	) {
+		this.id = ++commentId;
+		this.savedBody = this.body;
+	}
+}
+
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('AI × Human Review Comments extension is now active!');
 
-    // Register the Add Comment command
-    const addCommentCommand = vscode.commands.registerCommand('aiReviewComments.addComment', () => {
-        vscode.window.showInformationMessage('Add Comment command executed!');
-    });
+	const allThreads: vscode.CommentThread[] = [];
+	// A `CommentController` is able to provide comments for documents.
+	const commentController = vscode.comments.createCommentController(CONTROLLER_ID, CONTROLLER_LABEL);
+	context.subscriptions.push(commentController);
 
-    // Register the Install MCP Everywhere command
-    const installMCPCommand = vscode.commands.registerCommand('aiReviewComments.installMCPEverywhere', () => {
-        vscode.window.showInformationMessage('Install MCP Everywhere command executed!');
-    });
+	// A `CommentingRangeProvider` controls where gutter decorations that allow adding comments are shown
+	commentController.commentingRangeProvider = {
+		provideCommentingRanges: (document: vscode.TextDocument, _token: vscode.CancellationToken) => {
+			const lineCount = document.lineCount;
+			return [new vscode.Range(0, 0, lineCount - 1, 0)];
+		}
+	};
 
-    // Register the Review Panel provider (placeholder)
-    const reviewPanelProvider = new ReviewPanelProvider(context.extensionUri);
-    vscode.window.registerTreeDataProvider('aiReviewComments.reviewPanel', reviewPanelProvider);
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.createNote', (reply: vscode.CommentReply) => {
+		replyNote(reply);
+		allThreads.push(reply.thread);
+	}));
 
-    context.subscriptions.push(addCommentCommand, installMCPCommand);
-}
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.replyNote', (reply: vscode.CommentReply) => {
+		replyNote(reply);
+	}));
 
-export function deactivate() {
-    console.log('AI × Human Review Comments extension is now deactivated!');
-}
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.startDraft', (reply: vscode.CommentReply) => {
+		const thread = reply.thread;
+		thread.contextValue = 'draft';
+		const newComment = new NoteComment(reply.text, vscode.CommentMode.Preview, { name: 'vscode' }, thread);
+		newComment.label = 'pending';
+		thread.comments = [...thread.comments, newComment];
+	}));
 
-// Placeholder Review Panel Provider
-class ReviewPanelProvider implements vscode.TreeDataProvider<ReviewItem> {
-    constructor(private workspaceRoot: vscode.Uri) {}
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.finishDraft', (reply: vscode.CommentReply) => {
+		const thread = reply.thread;
 
-    getTreeItem(element: ReviewItem): vscode.TreeItem {
-        return element;
-    }
+		if (!thread) {
+			return;
+		}
 
-    getChildren(element?: ReviewItem): Thenable<ReviewItem[]> {
-        if (!element) {
-            // Return placeholder items for now
-            return Promise.resolve([
-                new ReviewItem('No comments yet', vscode.TreeItemCollapsibleState.None)
-            ]);
-        }
-        return Promise.resolve([]);
-    }
-}
+		thread.contextValue = undefined;
+		thread.collapsibleState = vscode.CommentThreadCollapsibleState.Collapsed;
+		if (reply.text) {
+			const newComment = new NoteComment(reply.text, vscode.CommentMode.Preview, { name: 'vscode' }, thread);
+			thread.comments = [...thread.comments, newComment].map(comment => {
+				comment.label = undefined;
+				return comment;
+			});
+		}
+		allThreads.push(thread);
+	}));
 
-class ReviewItem extends vscode.TreeItem {
-    constructor(
-        public readonly label: string,
-        public readonly collapsibleState: vscode.TreeItemCollapsibleState
-    ) {
-        super(label, collapsibleState);
-        this.tooltip = `${this.label}`;
-    }
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteNoteComment', (comment: NoteComment) => {
+		const thread = comment.parent;
+		if (!thread) {
+			return;
+		}
+
+		thread.comments = thread.comments.filter(cmt => (cmt as NoteComment).id !== comment.id);
+
+		if (thread.comments.length === 0) {
+			thread.dispose();
+		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteNote', (thread: vscode.CommentThread) => {
+		thread.dispose();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.cancelsaveNote', (comment: NoteComment) => {
+		if (!comment.parent) {
+			return;
+		}
+
+		comment.parent.comments = comment.parent.comments.map(cmt => {
+			if ((cmt as NoteComment).id === comment.id) {
+				cmt.body = (cmt as NoteComment).savedBody;
+				cmt.mode = vscode.CommentMode.Preview;
+			}
+
+			return cmt;
+		});
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.saveNote', (comment: NoteComment) => {
+		const thread = comment.parent;
+		if (!thread) {
+			return;
+		}
+
+		thread.comments = thread.comments.map(cmt => {
+			if ((cmt as NoteComment).id === comment.id) {
+				(cmt as NoteComment).savedBody = cmt.body;
+				cmt.mode = vscode.CommentMode.Preview;
+			}
+
+			return cmt;
+		});
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.editNote', (comment: NoteComment) => {
+		if (!comment.parent) {
+			return;
+		}
+
+		comment.parent.comments = comment.parent.comments.map(cmt => {
+			if ((cmt as NoteComment).id === comment.id) {
+				cmt.mode = vscode.CommentMode.Editing;
+			}
+
+			return cmt;
+		});
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.dispose', () => {
+		commentController.dispose();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.exportAllThread', async () => {
+		await vscode.env.clipboard.writeText(allThreads.map(thread => thread.comments.map(comment => comment.body.toString()).join('\n')).join('\n'));
+        vscode.window.showInformationMessage(
+        `Exported ${allThreads.length} comments to clipboard`
+      );
+	}));
+
+	function replyNote(reply: vscode.CommentReply) {
+		const thread = reply.thread;
+		const newComment = new NoteComment(new vscode.MarkdownString(reply.text), vscode.CommentMode.Preview, { name: 'vscode' }, thread, thread.comments.length ? 'canDelete' : undefined);
+		if (thread.contextValue === 'draft') {
+			newComment.label = 'pending';
+		}
+
+		thread.comments = [...thread.comments, newComment];
+	}
 }
