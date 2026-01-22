@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { CONTROLLER_ID, CONTROLLER_LABEL } from './constants/common';
+import { exportThreadsAsMarkdown } from './utils/parseCopyableStringFromThreads';
 
 let commentId = 1;
 
@@ -138,7 +139,8 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.exportAllThread', async () => {
-		await vscode.env.clipboard.writeText(allThreads.map(thread => thread.comments.map(comment => comment.body.toString()).join('\n')).join('\n'));
+		const copyableStringFromThreads = exportThreadsAsMarkdown(allThreads);
+		await vscode.env.clipboard.writeText(copyableStringFromThreads);
         vscode.window.showInformationMessage(
         `Exported ${allThreads.length} comments to clipboard`
       );

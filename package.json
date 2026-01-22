@@ -1,8 +1,9 @@
 {
-  "name": "ai-human-review-comments",
-  "displayName": "AI × Human Review Comments",
+  "name": "open-review",
+  "displayName": "Open Review",
   "description": "A unified review workflow for managing human-generated comments and AI responses",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "publisher": "openreview",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -153,7 +154,7 @@
 		}
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "vsce publish",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
@@ -175,5 +176,7 @@
     "@vscode/test-electron": "^2.2.0",
     "@vscode/vsce": "^2.15.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "repository": "https://github.com/yuhang-dong/open-review",
+  "license": "MIT"
 }

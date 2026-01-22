@@ -1,51 +1,120 @@
-# AI × Human Review Comments
+# Open Review
 
-A VS Code extension that provides a unified review workflow for managing human-generated comments and AI responses through MCP (Model Context Protocol) integration.
+Open Review is a VS Code extension that turns code review notes into **first-class comments** and lets you **export everything with one click**.
+
+It currently supports:
+
+* Add comment threads by clicking a line/range
+* Add/delete comments
+* Delete threads
+* Export all comments (Markdown) to clipboard
+
+> Status: MVP / actively iterating
+
+---
 
 ## Features
 
-- Create and manage review comments with draft/published states
-- AI integration through MCP server for accessing published comments
-- Human-AI validation loops for iterative review processes
-- Code anchoring with git diff-style binding
-- Centralized Review Panel for comment management
+### 1) Add comment threads from editor
 
-## Development
+* Click a line (or select a range) to create a comment thread
+* Type comments directly in VS Code’s native Comments UI
 
-### Prerequisites
+### 2) Manage threads & comments
 
-- Node.js (v16 or higher)
-- VS Code (v1.74.0 or higher)
+* Add / delete comments
+* Delete threads when the discussion is done
 
-### Setup
+### 3) Export all comments
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+Export all threads & comments as **Markdown** (grouped by file → thread → comment), optimized for:
 
-2. Compile the extension:
-   ```bash
-   npm run compile
-   ```
+* sharing in chat / docs
+* feeding into AI coding tools (Cline / Cursor / Claude Code, etc.)
 
-3. Run the extension in development mode:
-   - Press `F5` to open a new Extension Development Host window
-   - The extension will be automatically loaded
+Export format includes:
 
-### Building
+* file path
+* thread location (line / range)
+* all comments inside each thread (multi-line safe)
 
-To package the extension:
-```bash
-npm run package
-```
+---
 
 ## Usage
 
-1. Open a code file in VS Code
-2. Select code or position cursor on a line
-3. Right-click and select "Add Comment" or use Command Palette
-4. Manage comments in the Review Panel sidebar
+### Create a thread
+
+1. Open a file
+2. Click a line (or select lines)
+3. Add comments in the Comments panel
+
+### Delete a comment / thread
+
+* Use the built-in comment actions (or the Open Review commands, if enabled)
+
+### Export all comments
+
+Run the command:
+
+* **Open Review: Export All Comments**
+
+By default it will copy the Markdown to clipboard.
+
+---
+
+## Commands
+
+> Replace command IDs below with your real ones.
+
+* `open-review.exportAllComments` — Export all threads & comments to clipboard (Markdown)
+* `open-review.createThread` — Create a new thread at current line/selection
+* `open-review.deleteThread` — Delete current thread
+* `open-review.deleteComment` — Delete a comment
+
+---
+
+## Output Example
+
+````md
+## File: /Users/you/project/src/foo.ts
+
+### Thread @ L35
+- Comment 1 (Alice):
+  ```md
+  Are we sure about this logic?
+````
+
+* Comment 2 (Bob):
+
+  ```md
+  It shouldn't be `clearReact`.
+  ```
+
+````
+
+---
+
+## Roadmap
+
+- [ ] Export options: JSON / file output / unresolved-only / group-by
+- [ ] Better navigation: open thread location from export preview
+- [ ] AI workflows: send selected threads to your coding agent via MCP
+- [ ] Persistence & sync (optional)
+
+---
+
+## Development
+
+```bash
+pnpm install
+pnpm build
+pnpm watch
+````
+
+* Press `F5` to launch the Extension Development Host
+* Test comments, then run **Open Review: Export All Comments**
+
+---
 
 ## License
 
