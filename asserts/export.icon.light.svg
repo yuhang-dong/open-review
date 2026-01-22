@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- Comment bubble -->
+  <path d="M 0.949 2.617 C 0.949 1.889 1.498 1.294 2.168 1.294 L 13.757 1.294 C 14.427 1.294 14.976 1.889 14.976 2.617 L 14.976 10.886 C 14.976 11.614 14.427 12.209 13.757 12.209 L 7.657 12.209 L 4.608 15.186 L 4.608 12.209 L 2.168 12.209 C 1.498 12.209 0.949 11.614 0.949 10.886 L 0.949 2.617 Z" fill="none" stroke="#E5E7EB" stroke-width="1" stroke-linejoin="round" style=""></path>
+
+  <!-- Interaction bars -->
+  <rect x="5.281" y="4.496" width="1" height="4.6" rx="0.65" fill="#E5E7EB"/>
+  <rect x="9.768" y="4.578" width="1" height="4.6" rx="0.65" fill="#E5E7EB"/>
+</svg>

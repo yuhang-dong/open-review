@@ -2,8 +2,9 @@
   "name": "open-review",
   "displayName": "Open Review",
   "description": "A unified review workflow for managing human-generated comments and AI responses",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "openreview",
+  "icon": "asserts/icon.png",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -70,7 +71,10 @@
         "command": "openReview.exportAllThread",
         "title": "Export Comments",
         "category": "Open Review",
-        "icon": "$(export)"
+        "icon": {
+          "light": "asserts/export.icon.dark.svg",
+          "dark": "asserts/export.icon.light.svg"
+        }
       }
     ],
     "menus": {
@@ -154,7 +158,8 @@
 		}
   },
   "scripts": {
-    "vscode:prepublish": "vsce publish",
+    "vscode:prepublish": "npm run compile",
+    "publish": "vsce publish",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
