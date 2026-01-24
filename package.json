@@ -164,6 +164,8 @@
     "watch": "tsc -watch -p ./",
     "build:webview": "vite build --config src/webview/vite.config.ts",
     "dev:webview": "vite --config src/webview/vite.config.ts",
+    "dev:webview:check": "vite --config src/webview/vite.config.ts & tsc --noEmit --watch --project src/webview/tsconfig.json",
+    "type-check:webview": "tsc --noEmit --project src/webview/tsconfig.json",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts,tsx",
     "test": "node ./out/test/runTest.js",
