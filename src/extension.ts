@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as cp from 'child_process';
 import { CONTROLLER_ID, CONTROLLER_LABEL } from './constants/common';
 import { exportThreadsAsMarkdown } from './utils/parseCopyableStringFromThreads';
+import { SidebarProvider } from './sidebar/SidebarProvider';
 
 let commentId = 1;
 
@@ -81,6 +82,12 @@ class NoteComment implements vscode.Comment {
 
 
 export function activate(context: vscode.ExtensionContext) {
+
+	// Register the sidebar provider
+	const sidebarProvider = new SidebarProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider)
+	);
 
 	const allThreads: vscode.CommentThread[] = [];
 	// A `CommentController` is able to provide comments for documents.
