@@ -87,12 +87,36 @@ export class AssetManager {
   public async getWebviewHtml(webview: vscode.Webview): Promise<string> {
     const isDev = this.isDevelopmentMode();
     
-    if (isDev) {
-      // Ensure dev server is running
-      await this._ensureDevServerRunning();
-      return this._getDevHtml(webview);
-    } else {
+    try {
+      if (isDev) {
+        // Ensure dev server is running
+        await this._ensureDevServerRunning();
+        return this._getDevHtml(webview);
+      } else {
+        return this._getProdHtml(webview);
+      }
+    } catch (error) {
+      // Log the error with context
+      console.error('Error in getWebviewHtml:', error);
+      
+      // Re-throw with more context
+      if (error instanceof Error) {
+        throw new Error(`Failed to load webview HTML: ${error.message}`);
+      } else {
+        throw new Error(`Failed to load webview HTML: ${String(error)}`);
+      }
+    }
+  }
+
+  /**
+   * Gets production HTML as fallback when dev server fails
+   */
+  public async getProductionFallbackHtml(webview: vscode.Webview): Promise<string> {
+    try {
       return this._getProdHtml(webview);
+    } catch (error) {
+      console.error('Production fallback failed:', error);
+      throw new Error(`Production fallback failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -311,10 +335,17 @@ export class AssetManager {
     }
 
     if (this._devServerManager.status !== DevServerStatus.RUNNING) {
+      console.log('Development server not running, attempting to start...');
       const started = await this._devServerManager.startServer();
       if (!started) {
-        throw new Error('Failed to start development server');
+        throw new Error('Failed to start development server - check the Open Review Dev Server output channel for details');
       }
+    }
+
+    // Double-check that the server is actually accessible
+    const isAccessible = await this._devServerManager.isServerAccessible();
+    if (!isAccessible) {
+      throw new Error('Development server is running but not accessible - there may be a network or configuration issue');
     }
   }
 

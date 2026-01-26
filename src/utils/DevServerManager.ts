@@ -134,14 +134,39 @@ export class DevServerManager {
         this._setStatus(DevServerStatus.RUNNING);
         this._outputChannel.appendLine(`Development server started at ${this.getServerUrl()}`);
         this._outputChannel.appendLine(`HMR WebSocket available at ${this.getHmrUrl()}`);
+        
+        // Verify server is actually accessible
+        const isAccessible = await this.isServerAccessible();
+        if (!isAccessible) {
+          this._outputChannel.appendLine('Warning: Server started but is not accessible');
+          throw new Error('Development server started but is not accessible');
+        }
+        
         return true;
       } else {
         this._setStatus(DevServerStatus.ERROR);
-        return false;
+        throw new Error('Failed to spawn development server process');
       }
     } catch (error) {
-      this._outputChannel.appendLine(`Failed to start development server: ${error}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this._outputChannel.appendLine(`Failed to start development server: ${errorMessage}`);
+      console.error('Development server startup error:', error);
+      
       this._setStatus(DevServerStatus.ERROR);
+      
+      // Show user notification for critical startup errors
+      vscode.window.showErrorMessage(
+        `Development server failed to start: ${errorMessage}`,
+        'Show Output',
+        'Retry'
+      ).then(selection => {
+        if (selection === 'Show Output') {
+          this._outputChannel.show();
+        } else if (selection === 'Retry') {
+          this.startServer();
+        }
+      });
+      
       return false;
     }
   }
@@ -273,6 +298,13 @@ export class DevServerManager {
     return new Promise((resolve) => {
       const viteConfigPath = path.join(this._webviewPath, 'vite.config.ts');
       
+      // Check if vite config exists
+      if (!require('fs').existsSync(viteConfigPath)) {
+        this._outputChannel.appendLine(`Error: Vite config not found at ${viteConfigPath}`);
+        resolve(false);
+        return;
+      }
+      
       // Use npm run dev:webview command which uses the vite config
       const args = ['run', 'dev:webview'];
       
@@ -284,16 +316,30 @@ export class DevServerManager {
         NODE_ENV: 'development'
       };
 
-      this._serverProcess = cp.spawn('npm', args, {
-        cwd: this._extensionUri.fsPath,
-        env,
-        stdio: ['ignore', 'pipe', 'pipe']
-      });
+      this._outputChannel.appendLine(`Spawning process: npm ${args.join(' ')}`);
+      this._outputChannel.appendLine(`Working directory: ${this._extensionUri.fsPath}`);
+      this._outputChannel.appendLine(`Environment: PORT=${this._config.port}, HMR_PORT=${this._config.hmrPort}`);
+
+      try {
+        this._serverProcess = cp.spawn('npm', args, {
+          cwd: this._extensionUri.fsPath,
+          env,
+          stdio: ['ignore', 'pipe', 'pipe']
+        });
+      } catch (spawnError) {
+        this._outputChannel.appendLine(`Failed to spawn npm process: ${spawnError}`);
+        console.error('Failed to spawn npm process:', spawnError);
+        resolve(false);
+        return;
+      }
 
       let serverStarted = false;
+      let startupOutput = '';
       const startupTimeout = setTimeout(() => {
         if (!serverStarted) {
-          this._outputChannel.appendLine('Server startup timeout');
+          this._outputChannel.appendLine('Server startup timeout (30 seconds)');
+          this._outputChannel.appendLine('Startup output so far:');
+          this._outputChannel.appendLine(startupOutput);
           resolve(false);
         }
       }, 30000); // 30 second timeout
@@ -302,6 +348,7 @@ export class DevServerManager {
       if (this._serverProcess.stdout) {
         this._serverProcess.stdout.on('data', (data: Buffer) => {
           const output = data.toString();
+          startupOutput += output;
           this._outputChannel.append(output);
 
           // Check for server ready indicators
@@ -309,8 +356,14 @@ export class DevServerManager {
             if (!serverStarted) {
               serverStarted = true;
               clearTimeout(startupTimeout);
+              this._outputChannel.appendLine('Development server ready signal detected');
               resolve(true);
             }
+          }
+
+          // Check for TypeScript compilation errors
+          if (output.includes('TypeScript error') || output.includes('TS')) {
+            this._outputChannel.appendLine('TypeScript compilation error detected in dev server output');
           }
         });
       }
@@ -319,11 +372,16 @@ export class DevServerManager {
       if (this._serverProcess.stderr) {
         this._serverProcess.stderr.on('data', (data: Buffer) => {
           const error = data.toString();
+          startupOutput += `STDERR: ${error}`;
           this._outputChannel.append(`Error: ${error}`);
           
-          // Check for port conflict errors
+          // Check for specific error types
           if (error.includes('EADDRINUSE') || error.includes('address already in use')) {
             this._outputChannel.appendLine('Port conflict detected, will retry with different port');
+          } else if (error.includes('ENOENT') || error.includes('command not found')) {
+            this._outputChannel.appendLine('npm command not found - please ensure Node.js and npm are installed');
+          } else if (error.includes('TypeScript')) {
+            this._outputChannel.appendLine('TypeScript compilation error in development server');
           }
         });
       }
@@ -331,6 +389,13 @@ export class DevServerManager {
       // Handle process exit
       this._serverProcess.on('exit', (code, signal) => {
         this._outputChannel.appendLine(`Development server exited with code ${code}, signal ${signal}`);
+        
+        if (code !== 0 && code !== null) {
+          this._outputChannel.appendLine(`Non-zero exit code indicates an error occurred`);
+          this._outputChannel.appendLine('Final startup output:');
+          this._outputChannel.appendLine(startupOutput);
+        }
+        
         this._serverProcess = null;
         
         if (!serverStarted) {
@@ -340,13 +405,15 @@ export class DevServerManager {
         
         // Update status if server exits unexpectedly
         if (this._status === DevServerStatus.RUNNING) {
+          this._outputChannel.appendLine('Development server exited unexpectedly');
           this._setStatus(DevServerStatus.ERROR);
         }
       });
 
       // Handle process errors
       this._serverProcess.on('error', (error) => {
-        this._outputChannel.appendLine(`Failed to start development server: ${error.message}`);
+        this._outputChannel.appendLine(`Failed to start development server process: ${error.message}`);
+        console.error('Development server process error:', error);
         clearTimeout(startupTimeout);
         
         if (!serverStarted) {
