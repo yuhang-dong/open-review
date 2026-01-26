@@ -177,18 +177,24 @@
 		}
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile && npm run build:webview",
+    "vscode:prepublish": "npm run compile:prod && npm run build:webview:prod",
     "publish": "vsce publish",
     "compile": "tsc -p ./",
+    "compile:prod": "tsc -p ./ --removeComments --importHelpers",
     "watch": "tsc -watch -p ./",
     "build:webview": "vite build --config src/webview/vite.config.ts",
+    "build:webview:prod": "NODE_ENV=production vite build --config src/webview/vite.config.ts --mode production",
     "dev:webview": "vite --config src/webview/vite.config.ts",
     "dev:webview:check": "vite --config src/webview/vite.config.ts & tsc --noEmit --watch --project src/webview/tsconfig.json",
+    "type-check": "tsc --noEmit",
     "type-check:webview": "tsc --noEmit --project src/webview/tsconfig.json",
+    "type-check:all": "npm run type-check && npm run type-check:webview",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts,tsx",
     "test": "node ./out/test/runTest.js",
-    "package": "vsce package"
+    "package": "vsce package",
+    "clean": "rimraf out",
+    "build:all": "npm run clean && npm run compile:prod && npm run build:webview:prod"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",
