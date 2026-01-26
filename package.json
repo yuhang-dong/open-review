@@ -16,11 +16,21 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "views": {
-      "explorer": [
+    "viewsContainers": {
+      "activitybar": [
         {
-          "id": "openReview.sidebarView",
+          "id": "openReview",
+          "title": "Open Review",
+          "icon": "$(comment-discussion)"
+        }
+      ]
+    },
+    "views": {
+      "openReview": [
+        {
+          "id": "openReview.webviewView",
           "name": "Open Review",
+          "type": "webview",
           "when": "true"
         }
       ]

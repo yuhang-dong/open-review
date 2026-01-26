@@ -82,12 +82,21 @@ class NoteComment implements vscode.Comment {
 
 
 export function activate(context: vscode.ExtensionContext) {
+	console.log('Open Review extension is being activated...');
 
-	// Register the sidebar provider
+	// Register the webview provider
 	const sidebarProvider = new SidebarProvider(context.extensionUri);
+	console.log('SidebarProvider created with viewType:', SidebarProvider.viewType);
+	
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(SidebarProvider.viewType, sidebarProvider)
 	);
+	console.log('WebviewViewProvider registered for viewType:', SidebarProvider.viewType);
+	
+	// Add sidebar provider to subscriptions for proper disposal
+	context.subscriptions.push(sidebarProvider);
+
+	console.log('Open Review extension activated successfully!');
 
 	const allThreads: vscode.CommentThread[] = [];
 	// A `CommentController` is able to provide comments for documents.
@@ -221,4 +230,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 		thread.comments = [...thread.comments, newComment];
 	}
+}
+
+export function deactivate() {
+	// Extension cleanup is handled automatically by VS Code through context.subscriptions
+	// All registered commands, providers, and disposables are properly disposed
 }

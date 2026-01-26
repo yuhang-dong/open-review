@@ -18,9 +18,9 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
+    port: parseInt(process.env.VITE_DEV_SERVER_PORT || '3000'),
     host: 'localhost',
-    strictPort: false, // Allow fallback to other ports if 3000 is busy
+    strictPort: false, // Allow fallback to other ports if specified port is busy
     cors: {
       origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -28,9 +28,9 @@ export default defineConfig({
       credentials: false
     },
     hmr: {
-      port: 3001,
+      port: parseInt(process.env.VITE_HMR_PORT || '3001'),
       host: 'localhost',
-      clientPort: 3001
+      clientPort: parseInt(process.env.VITE_HMR_PORT || '3001')
     },
     // Configure for webview development
     fs: {

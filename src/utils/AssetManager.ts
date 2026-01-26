@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { DevServerManager, DevServerStatus } from './DevServerManager';
 
 /**
  * Asset manifest structure for production builds
@@ -33,12 +34,14 @@ interface DevServerConfig {
  * - Generate proper asset URIs for webview consumption
  * - Handle Vite dev server integration in development mode
  * - Load pre-built assets in production mode
+ * - Manage automatic dev server startup and lifecycle
  */
 export class AssetManager {
   private readonly _extensionUri: vscode.Uri;
   private readonly _webviewDistPath: string;
   private readonly _devServerConfig: DevServerConfig;
   private _manifest: AssetManifest | null = null;
+  private _devServerManager: DevServerManager | null = null;
 
   constructor(extensionUri: vscode.Uri) {
     this._extensionUri = extensionUri;
@@ -79,11 +82,14 @@ export class AssetManager {
   /**
    * Gets the complete HTML content for the webview
    * Handles both development and production asset loading
+   * Automatically starts dev server in development mode
    */
-  public getWebviewHtml(webview: vscode.Webview): string {
+  public async getWebviewHtml(webview: vscode.Webview): Promise<string> {
     const isDev = this.isDevelopmentMode();
     
     if (isDev) {
+      // Ensure dev server is running
+      await this._ensureDevServerRunning();
       return this._getDevHtml(webview);
     } else {
       return this._getProdHtml(webview);
@@ -108,23 +114,32 @@ export class AssetManager {
    * Generates development HTML with Vite dev server integration
    */
   private _getDevHtml(webview: vscode.Webview): string {
-    const devServerUrl = `${this._devServerConfig.protocol}://${this._devServerConfig.host}:${this._devServerConfig.port}`;
-    const scriptSrc = `${devServerUrl}/src/main.tsx`;
+    const devServerUrl = this._getDevServerUrl();
     
-    // Use a nonce for security
-    const nonce = this._getNonce();
-
     return `<!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src ${devServerUrl} ws://localhost:3001; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${devServerUrl};">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src ${devServerUrl}; img-src ${webview.cspSource} https: data:; style-src ${webview.cspSource} 'unsafe-inline';">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Open Review</title>
+        <style>
+          body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+          }
+          iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+          }
+        </style>
       </head>
       <body>
-        <div id="root"></div>
-        <script type="module" nonce="${nonce}" src="${scriptSrc}"></script>
+        <iframe src="${devServerUrl}" title="Open Review React App"></iframe>
       </body>
       </html>`;
   }
@@ -166,7 +181,7 @@ export class AssetManager {
    * Gets development asset URIs (points to Vite dev server)
    */
   private _getDevAssetUris(webview: vscode.Webview): { js: vscode.Uri[], css: vscode.Uri[] } {
-    const devServerUrl = `${this._devServerConfig.protocol}://${this._devServerConfig.host}:${this._devServerConfig.port}`;
+    const devServerUrl = this._getDevServerUrl();
     
     // In development, we only need the main entry point
     // CSS is injected by Vite automatically
@@ -240,7 +255,7 @@ export class AssetManager {
    * Gets the development server URL for external access
    */
   public getDevServerUrl(): string {
-    return `${this._devServerConfig.protocol}://${this._devServerConfig.host}:${this._devServerConfig.port}`;
+    return this._getDevServerUrl();
   }
 
   /**
@@ -248,5 +263,82 @@ export class AssetManager {
    */
   public updateDevServerConfig(config: Partial<DevServerConfig>): void {
     Object.assign(this._devServerConfig, config);
+  }
+
+  /**
+   * Gets the dev server manager instance
+   */
+  public getDevServerManager(): DevServerManager | null {
+    return this._devServerManager;
+  }
+
+  /**
+   * Starts the development server if not already running
+   */
+  public async startDevServer(): Promise<boolean> {
+    if (!this._devServerManager) {
+      this._devServerManager = new DevServerManager(this._extensionUri);
+    }
+    
+    return await this._devServerManager.startServer();
+  }
+
+  /**
+   * Stops the development server
+   */
+  public async stopDevServer(): Promise<void> {
+    if (this._devServerManager) {
+      await this._devServerManager.stopServer();
+    }
+  }
+
+  /**
+   * Disposes the asset manager and stops dev server
+   */
+  public dispose(): void {
+    if (this._devServerManager) {
+      this._devServerManager.dispose();
+      this._devServerManager = null;
+    }
+  }
+
+  /**
+   * Ensures the development server is running
+   */
+  private async _ensureDevServerRunning(): Promise<void> {
+    if (!this._devServerManager) {
+      this._devServerManager = new DevServerManager(this._extensionUri);
+    }
+
+    if (this._devServerManager.status !== DevServerStatus.RUNNING) {
+      const started = await this._devServerManager.startServer();
+      if (!started) {
+        throw new Error('Failed to start development server');
+      }
+    }
+  }
+
+  /**
+   * Gets the current development server URL
+   */
+  private _getDevServerUrl(): string {
+    if (this._devServerManager) {
+      return this._devServerManager.getServerUrl();
+    }
+    
+    // Fallback to default configuration
+    return `${this._devServerConfig.protocol}://${this._devServerConfig.host}:${this._devServerConfig.port}`;
+  }
+
+  /**
+   * Gets the HMR WebSocket URL for live reloading
+   */
+  private _getHmrWebSocketUrl(): string {
+    if (this._devServerManager) {
+      return this._devServerManager.getHmrUrl();
+    }
+    
+    // Fallback to default HMR port
+    return `ws://${this._devServerConfig.host}:3001`;
   }
 }
