@@ -56,8 +56,7 @@ export class AssetManager {
 
   /**
    * Determines if the extension is running in development mode
-   * Development mode is detected by checking if Vite dev server is running
-   * or if NODE_ENV is set to 'development'
+   * Development mode is detected by checking if we're in the extension development host
    */
   public isDevelopmentMode(): boolean {
     // Check environment variable first
@@ -66,16 +65,17 @@ export class AssetManager {
     }
 
     // Check if we're in extension development host (when debugging extension)
-    if (vscode.env.sessionId && vscode.env.machineId === 'someValue') {
+    // This is the most reliable way to detect development mode
+    const isExtensionDevelopment = vscode.env.sessionId.includes('dev') || 
+                                   process.env.VSCODE_DEBUG_MODE === 'true' ||
+                                   vscode.env.appName.includes('Development');
+
+    if (isExtensionDevelopment) {
       return true;
     }
 
-    // Check if production assets exist - if not, assume development
-    const manifestPath = path.join(this._webviewDistPath, 'manifest.json');
-    if (!fs.existsSync(manifestPath)) {
-      return true;
-    }
-
+    // For now, always use production mode to ensure stability
+    // Development mode can be enabled by setting NODE_ENV=development
     return false;
   }
 
@@ -172,31 +172,60 @@ export class AssetManager {
    * Generates production HTML with pre-built assets
    */
   private _getProdHtml(webview: vscode.Webview): string {
-    const assets = this._getProdAssetUris(webview);
+    // Read the built HTML file directly
+    const htmlPath = path.join(this._webviewDistPath, 'index.html');
+    
+    try {
+      if (fs.existsSync(htmlPath)) {
+        let htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        
+        // Convert relative asset paths to webview URIs
+        htmlContent = htmlContent.replace(
+          /(?:src|href)="\.\/assets\/([^"]+)"/g,
+          (match, assetPath) => {
+            const assetUri = webview.asWebviewUri(
+              vscode.Uri.joinPath(this._extensionUri, 'out', 'webview', 'assets', assetPath)
+            );
+            return match.replace(`"./assets/${assetPath}"`, `"${assetUri}"`);
+          }
+        );
+        
+        // Update CSP to allow the webview source
+        const nonce = this._getNonce();
+        htmlContent = htmlContent.replace(
+          /<meta charset="UTF-8" \/>/,
+          `<meta charset="UTF-8" />
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${webview.cspSource}; img-src ${webview.cspSource} https: data:;">`
+        );
+        
+        // Add nonce to script tags
+        htmlContent = htmlContent.replace(
+          /<script/g,
+          `<script nonce="${nonce}"`
+        );
+        
+        return htmlContent;
+      }
+    } catch (error) {
+      console.error('Failed to read built HTML file:', error);
+    }
+    
+    // Fallback HTML if file reading fails
     const nonce = this._getNonce();
-
-    // Generate CSS link tags
-    const cssLinks = assets.css.map(uri => 
-      `<link href="${uri}" rel="stylesheet">`
-    ).join('\n        ');
-
-    // Generate script tags
-    const scriptTags = assets.js.map(uri => 
-      `<script nonce="${nonce}" src="${uri}"></script>`
-    ).join('\n        ');
-
     return `<!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${webview.cspSource}; img-src ${webview.cspSource} https: data:;">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        ${cssLinks}
         <title>Open Review</title>
       </head>
       <body>
         <div id="root"></div>
-        ${scriptTags}
+        <div style="padding: 20px; text-align: center;">
+          <h1>Open Review</h1>
+          <p>Webview assets could not be loaded. Please rebuild the extension.</p>
+        </div>
       </body>
       </html>`;
   }

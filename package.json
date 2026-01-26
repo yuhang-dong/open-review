@@ -2,7 +2,7 @@
   "name": "open-review",
   "displayName": "Open Review",
   "description": "A unified review workflow for managing human-generated comments and AI responses",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "openreview",
   "icon": "asserts/icon.png",
   "engines": {
@@ -97,90 +97,90 @@
       }
     ],
     "menus": {
-			"commandPalette": [
-				{
-					"command": "openReview.createNote",
-					"when": "false"
-				},
-				{
-					"command": "openReview.replyNote",
-					"when": "false"
-				},
-				{
-					"command": "openReview.deleteNote",
-					"when": "false"
-				},
-				{
-					"command": "openReview.deleteNoteComment",
-					"when": "false"
-				}
-			],
-			"comments/commentThread/title": [
-				{
-					"command": "openReview.deleteNote",
-					"group": "navigation",
-					"when": "commentController == comment-sample && !commentThreadIsEmpty"
-				}
-			],
-			"comments/commentThread/context": [
-				{
-					"command": "openReview.createNote",
-					"group": "inline",
-					"when": "commentController == comment-sample && commentThreadIsEmpty"
-				},
-				{
-					"command": "openReview.replyNote",
-					"group": "inline",
-					"when": "commentController == comment-sample && !commentThreadIsEmpty"
-				},
-				{
-					"command": "openReview.startDraft",
-					"group": "inline",
-					"when": "commentController == comment-sample && commentThreadIsEmpty"
-				},
-				{
-					"command": "openReview.finishDraft",
-					"group": "inline",
-					"when": "commentController == comment-sample && commentThread == draft"
-				}
-			],
-			"comments/comment/title": [
-				{
-					"command": "openReview.editNote",
-					"group": "group@1",
-					"when": "commentController == comment-sample"
-				},
-				{
-					"command": "openReview.deleteNoteComment",
-					"group": "group@2",
-					"when": "commentController == comment-sample && comment == canDelete"
-				}
-			],
-			"comments/comment/context": [
-				{
-					"command": "openReview.cancelsaveNote",
-					"group": "inline@1",
-					"when": "commentController == comment-sample"
-				},
-				{
-					"command": "openReview.saveNote",
-					"group": "inline@2",
-					"when": "commentController == comment-sample"
-				}
-			],
+      "commandPalette": [
+        {
+          "command": "openReview.createNote",
+          "when": "false"
+        },
+        {
+          "command": "openReview.replyNote",
+          "when": "false"
+        },
+        {
+          "command": "openReview.deleteNote",
+          "when": "false"
+        },
+        {
+          "command": "openReview.deleteNoteComment",
+          "when": "false"
+        }
+      ],
+      "comments/commentThread/title": [
+        {
+          "command": "openReview.deleteNote",
+          "group": "navigation",
+          "when": "commentController == comment-sample && !commentThreadIsEmpty"
+        }
+      ],
+      "comments/commentThread/context": [
+        {
+          "command": "openReview.createNote",
+          "group": "inline",
+          "when": "commentController == comment-sample && commentThreadIsEmpty"
+        },
+        {
+          "command": "openReview.replyNote",
+          "group": "inline",
+          "when": "commentController == comment-sample && !commentThreadIsEmpty"
+        },
+        {
+          "command": "openReview.startDraft",
+          "group": "inline",
+          "when": "commentController == comment-sample && commentThreadIsEmpty"
+        },
+        {
+          "command": "openReview.finishDraft",
+          "group": "inline",
+          "when": "commentController == comment-sample && commentThread == draft"
+        }
+      ],
+      "comments/comment/title": [
+        {
+          "command": "openReview.editNote",
+          "group": "group@1",
+          "when": "commentController == comment-sample"
+        },
+        {
+          "command": "openReview.deleteNoteComment",
+          "group": "group@2",
+          "when": "commentController == comment-sample && comment == canDelete"
+        }
+      ],
+      "comments/comment/context": [
+        {
+          "command": "openReview.cancelsaveNote",
+          "group": "inline@1",
+          "when": "commentController == comment-sample"
+        },
+        {
+          "command": "openReview.saveNote",
+          "group": "inline@2",
+          "when": "commentController == comment-sample"
+        }
+      ],
       "editor/title": [
         {
           "command": "openReview.exportAllThread",
           "group": "navigation@100"
         }
       ]
-		}
+    }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile:prod && npm run build:webview:prod",
-    "publish": "vsce publish",
+    "vscode:prepublish": "npm run build:all",
+    "publish": "npm run package && vsce publish",
     "compile": "tsc -p ./",
-    "compile:prod": "tsc -p ./ --removeComments --importHelpers",
+    "compile:prod": "tsc -p ./ --removeComments",
     "watch": "tsc -watch -p ./",
     "build:webview": "vite build --config src/webview/vite.config.ts",
     "build:webview:prod": "NODE_ENV=production vite build --config src/webview/vite.config.ts --mode production",
@@ -194,25 +194,27 @@
     "test": "node ./out/test/runTest.js",
     "package": "vsce package",
     "clean": "rimraf out",
-    "build:all": "npm run clean && npm run compile:prod && npm run build:webview:prod"
+    "build:all": "npm run clean && npm run compile:prod && npm run build:webview:prod",
+    "prebuild:all": "npm run type-check:all"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
-    "@types/node": "16.x",
-    "@types/mocha": "^10.0.1",
     "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "@vitejs/plugin-react": "^4.0.0",
-    "eslint": "^8.28.0",
-    "typescript": "^4.9.4",
-    "mocha": "^10.2.0",
-    "glob": "^8.0.3",
-    "vite": "^4.4.0",
     "@vscode/test-electron": "^2.2.0",
-    "@vscode/vsce": "^2.15.0"
+    "@vscode/vsce": "^2.15.0",
+    "eslint": "^8.28.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.2.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^4.9.4",
+    "vite": "^4.4.0"
   },
   "dependencies": {
     "react": "^18.2.0",

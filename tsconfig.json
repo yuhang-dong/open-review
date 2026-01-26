@@ -15,7 +15,7 @@
     "resolveJsonModule": true,
     // Production build optimizations for extension code
     "removeComments": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "downlevelIteration": false,
     "experimentalDecorators": false,
     "emitDecoratorMetadata": false,
