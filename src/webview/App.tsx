@@ -1,10 +1,16 @@
 import React from 'react';
+import { ReviewPanel } from './components';
+import { VSCodeAPI } from './types';
+
+// Declare VS Code API
+declare const acquireVsCodeApi: () => VSCodeAPI;
 
 const App: React.FC = () => {
+  const vscode = acquireVsCodeApi();
+
   return (
     <div className="app">
-      <h1>Hello World</h1>
-      <p>VS Code Sidebar Webview Panel</p>
+      <ReviewPanel vscode={vscode} />
     </div>
   );
 };
