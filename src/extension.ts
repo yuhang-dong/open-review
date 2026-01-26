@@ -106,7 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// Continue with rest of extension activation even if sidebar fails
 	}
 
-	const allThreads: vscode.CommentThread[] = [];
+	const allThreads: NoteComment[] = [];
 	// A `CommentController` is able to provide comments for documents.
 	const commentController = vscode.comments.createCommentController(CONTROLLER_ID, CONTROLLER_LABEL);
 	context.subscriptions.push(commentController);
