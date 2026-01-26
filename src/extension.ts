@@ -1,84 +1,9 @@
 import * as vscode from 'vscode';
-import * as os from 'os';
-import * as cp from 'child_process';
 import { CONTROLLER_ID, CONTROLLER_LABEL } from './constants/common';
 import { exportThreadsAsMarkdown } from './utils/parseCopyableStringFromThreads';
+import { getUserName } from './utils/getUserName';
+import { NoteComment } from './types/NoteComment';
 import { SidebarProvider } from './sidebar/SidebarProvider';
-
-let commentId = 1;
-
-/**
- * Get the username with priority:
- * 1. Workspace git username (only if workspace is a git repository)
- * 2. System (mac/linux/windows) user name
- * 3. Default name from runtime (vscode / kiro / cursor)
- */
-function getUserName(): string {
-	vscode.window.showInformationMessage(
-        `Exported ${vscode.env.appName.toLowerCase()} comments to clipboard`
-      );
-	// 1. Try to get workspace git username (only if it's a git repository)
-	try {
-		const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-		if (workspaceFolder) {
-			// First check if this is a git repository
-			cp.execSync('git rev-parse --is-inside-work-tree', { 
-				encoding: 'utf8',
-				cwd: workspaceFolder,
-				timeout: 3000,
-				stdio: 'pipe'
-			});
-			
-			// If we get here, it's a git repository, so get the username
-			const gitUserName = cp.execSync('git config user.name', { 
-				encoding: 'utf8',
-				cwd: workspaceFolder,
-				timeout: 3000
-			}).trim();
-			if (gitUserName) {
-				return gitUserName;
-			}
-		}
-	} catch (error) {
-		// Not a git repository or git config not available, continue to next option
-	}
-
-	// 2. Try to get system username
-	try {
-		const systemUserName = os.userInfo().username;
-		if (systemUserName) {
-			return systemUserName;
-		}
-	} catch (error) {
-		// System username not available, continue to next option
-	}
-
-	// 3. Default name based on runtime
-	const productName = vscode.env.appName.toLowerCase();
-	if (productName.includes('cursor')) {
-		return 'cursor';
-	} else if (productName.includes('kiro')) {
-		return 'kiro';
-	} else {
-		return 'vscode';
-	}
-}
-
-class NoteComment implements vscode.Comment {
-	id: number;
-	label: string | undefined;
-	savedBody: string | vscode.MarkdownString; // for the Cancel button
-	constructor(
-		public body: string | vscode.MarkdownString,
-		public mode: vscode.CommentMode,
-		public author: vscode.CommentAuthorInformation,
-		public parent?: vscode.CommentThread,
-		public contextValue?: string
-	) {
-		this.id = ++commentId;
-		this.savedBody = this.body;
-	}
-}
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -106,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// Continue with rest of extension activation even if sidebar fails
 	}
 
-	const allThreads: NoteComment[] = [];
+	const allThreads: vscode.CommentThread[] = [];
 	// A `CommentController` is able to provide comments for documents.
 	const commentController = vscode.comments.createCommentController(CONTROLLER_ID, CONTROLLER_LABEL);
 	context.subscriptions.push(commentController);
@@ -224,9 +149,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.exportAllThread', async () => {
 		const copyableStringFromThreads = exportThreadsAsMarkdown(allThreads);
 		await vscode.env.clipboard.writeText(copyableStringFromThreads);
-        vscode.window.showInformationMessage(
-        `Exported ${allThreads.length} comments to clipboard`
-      );
+		vscode.window.showInformationMessage(
+			`Exported ${allThreads.length} comments to clipboard`
+		);
 	}));
 
 	function replyNote(reply: vscode.CommentReply) {
