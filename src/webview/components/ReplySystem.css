@@ -1,0 +1,122 @@
+/* ReplySystem Component Styles */
+
+.reply-system {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background-color: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 3px;
+  width: 100%;
+}
+
+.reply-system__textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  background-color: transparent;
+  border: none;
+  color: var(--vscode-input-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+}
+
+.reply-system__textarea::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+.reply-system__textarea:focus {
+  outline: none;
+}
+
+.reply-system__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.reply-system__cancel-btn,
+.reply-system__submit-btn {
+  padding: 4px 10px;
+  height: 24px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: normal;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.reply-system__cancel-btn {
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  border: 1px solid var(--vscode-button-border);
+}
+
+.reply-system__cancel-btn:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.reply-system__cancel-btn:active {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+  opacity: 0.8;
+}
+
+.reply-system__submit-btn {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  font-weight: 600;
+}
+
+.reply-system__submit-btn:hover:not(:disabled) {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.reply-system__submit-btn:active:not(:disabled) {
+  background-color: var(--vscode-button-hoverBackground);
+  opacity: 0.8;
+}
+
+.reply-system__submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dark theme specific adjustments */
+body[data-vscode-theme-kind="vscode-dark"] .reply-system {
+  background-color: #1e1e1e;
+  border-color: #3e3e42;
+}
+
+body[data-vscode-theme-kind="vscode-dark"] .reply-system__cancel-btn {
+  background-color: #2d2d30;
+  color: #cccccc;
+  border-color: #3e3e42;
+}
+
+body[data-vscode-theme-kind="vscode-dark"] .reply-system__submit-btn {
+  background-color: #007acc;
+  color: #ffffff;
+}
+
+/* Light theme specific adjustments */
+body[data-vscode-theme-kind="vscode-light"] .reply-system {
+  background-color: #ffffff;
+  border-color: #e1e4e8;
+}
+
+body[data-vscode-theme-kind="vscode-light"] .reply-system__cancel-btn {
+  background-color: #fafbfc;
+  color: #24292e;
+  border-color: #e1e4e8;
+}
+
+body[data-vscode-theme-kind="vscode-light"] .reply-system__submit-btn {
+  background-color: #2da44e;
+  color: #ffffff;
+}

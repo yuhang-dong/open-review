@@ -117,9 +117,17 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
           break;
           
         case 'reply':
-          // For now, just log the reply action
-          // The actual reply functionality will be implemented in the ReplySystem component
-          console.log('Reply action triggered for thread:', action.threadId);
+          // Send reply message to extension
+          // Extension will handle getting author info via getUserName()
+          vscode.postMessage({
+            type: 'replyToThread',
+            payload: {
+              threadId: action.threadId,
+              content: action.payload.content,
+              // Empty author name triggers extension to use getUserName()
+              author: { name: '' }
+            }
+          });
           break;
           
         default:

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ThreadCardProps } from '../types/components';
+import ReplySystem from './ReplySystem';
 import './ThreadCard.css';
 
 /**
@@ -9,7 +10,6 @@ import './ThreadCard.css';
 const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: initialExpanded = false }) => {
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
   const [isReplying, setIsReplying] = useState(false);
-  const [replyContent, setReplyContent] = useState('');
 
   // Get the original comment (first non-reply comment)
   const originalComment = thread.comments.find(c => !c.isReply);
@@ -61,25 +61,21 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: i
   /**
    * Handle reply submission
    */
-  const handleReplySubmit = () => {
-    if (replyContent.trim()) {
-      onAction({
-        type: 'reply',
-        threadId: thread.id,
-        payload: {
-          content: replyContent.trim()
-        }
-      });
-      setReplyContent('');
-      setIsReplying(false);
-    }
+  const handleReplySubmit = (content: string) => {
+    onAction({
+      type: 'reply',
+      threadId: thread.id,
+      payload: {
+        content
+      }
+    });
+    setIsReplying(false);
   };
 
   /**
    * Handle reply cancellation
    */
   const handleReplyCancel = () => {
-    setReplyContent('');
     setIsReplying(false);
   };
 
@@ -203,30 +199,11 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: i
               </button>
             </div>
           ) : (
-            <div className="thread-card__reply-form">
-              <textarea
-                className="thread-card__reply-textarea"
-                placeholder="Write a reply..."
-                value={replyContent}
-                onChange={(e) => setReplyContent(e.target.value)}
-                autoFocus
-              />
-              <div className="thread-card__reply-actions">
-                <button 
-                  className="thread-card__reply-cancel"
-                  onClick={handleReplyCancel}
-                >
-                  Cancel
-                </button>
-                <button 
-                  className="thread-card__reply-submit"
-                  onClick={handleReplySubmit}
-                  disabled={!replyContent.trim()}
-                >
-                  Reply
-                </button>
-              </div>
-            </div>
+            <ReplySystem
+              threadId={thread.id}
+              onReply={handleReplySubmit}
+              onCancel={handleReplyCancel}
+            />
           )}
 
           {/* Resolve button (only for open threads) */}
