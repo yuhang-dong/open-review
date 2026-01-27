@@ -79,6 +79,29 @@
   flex-shrink: 0;
 }
 
+.thread-card__comment-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.thread-card__comment-count svg {
+  width: 12px;
+  height: 12px;
+  color: var(--crw-text-muted);
+}
+
+.thread-card__comment-count span {
+  font-size: 11px;
+  color: var(--crw-text-muted);
+  font-weight: normal;
+}
+
+.thread-card__dot {
+  color: var(--crw-text-muted);
+}
+
 .thread-card__status-badge {
   flex-shrink: 0;
 }
