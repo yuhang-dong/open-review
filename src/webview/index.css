@@ -19,11 +19,13 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .review-panel__header {
   padding: 16px;
   border-bottom: 1px solid var(--vscode-panel-border);
+  background-color: var(--vscode-sideBar-background);
 }
 
 .review-panel__title {
@@ -45,32 +47,140 @@ body {
   padding: 16px;
 }
 
+/* Status display */
+.review-panel__status {
+  background-color: var(--vscode-editor-inactiveSelectionBackground);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+
+.review-panel__status-item {
+  margin-bottom: 4px;
+}
+
+.review-panel__status-item:last-child {
+  margin-bottom: 0;
+}
+
+.review-panel__status-item strong {
+  color: var(--vscode-foreground);
+  margin-right: 8px;
+}
+
+/* Loading state */
+.review-panel__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.review-panel__loading::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--vscode-progressBar-background);
+  border-top: 2px solid var(--vscode-progressBar-foreground);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 12px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.review-panel__error {
+  padding: 20px;
+  text-align: center;
+  color: var(--vscode-errorForeground);
+  background-color: var(--vscode-inputValidation-errorBackground);
+  border: 1px solid var(--vscode-inputValidation-errorBorder);
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+.review-panel__error h3 {
+  margin: 0 0 12px 0;
+  color: var(--vscode-errorForeground);
+}
+
+.review-panel__error p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+.review-panel__retry-button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--vscode-font-family);
+}
+
+.review-panel__retry-button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.review-panel__retry-button:active {
+  background-color: var(--vscode-button-background);
+  transform: translateY(1px);
+}
+
+/* Placeholder content */
 .review-panel__placeholder {
   padding: 20px;
   text-align: center;
   color: var(--vscode-descriptionForeground);
+  background-color: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+}
+
+.review-panel__placeholder h3 {
+  margin: 0 0 12px 0;
+  color: var(--vscode-foreground);
 }
 
 .review-panel__placeholder ul {
   text-align: left;
   display: inline-block;
-  margin-top: 16px;
+  margin: 16px 0;
 }
 
 .review-panel__placeholder li {
   margin-bottom: 4px;
+  font-size: 13px;
 }
 
-/* Theme-specific styles */
+/* Theme-specific enhancements */
 .theme-dark {
-  /* Dark theme styles will be enhanced in task 3.3 */
+  /* Enhanced dark theme support */
 }
 
 .theme-light {
-  /* Light theme styles will be enhanced in task 3.3 */
+  /* Enhanced light theme support */
 }
 
-/* Component placeholders */
+/* Initialization state indicator */
+.review-panel[data-initialized="true"] .review-panel__header {
+  border-left: 3px solid var(--vscode-progressBar-foreground);
+}
+
+.review-panel[data-initialized="false"] .review-panel__header {
+  border-left: 3px solid var(--vscode-progressBar-background);
+}
+
+/* Component placeholders for future tasks */
 .filter-tabs,
 .search-bar,
 .thread-list,
