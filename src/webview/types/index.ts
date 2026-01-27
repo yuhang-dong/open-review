@@ -44,6 +44,10 @@ export interface CommentThread {
   id: string;
   filePath: string;
   lineNumber: number;
+  lineRange?: {
+    start: number;
+    end: number;
+  };
   status: ThreadStatus;
   comments: Comment[];
   createdAt: Date;

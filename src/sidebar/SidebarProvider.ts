@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { AssetManager } from '../utils/AssetManager';
+import { CommentThread, ThemeType, WebviewMessage, ExtensionMessage } from '../webview/types';
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'openReview.webviewView';
@@ -7,10 +8,159 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
     private _assetManager: AssetManager;
     private _outputChannel: vscode.OutputChannel;
+    private _disposables: vscode.Disposable[] = [];
+    private _threads: CommentThread[] = [];
+    private _isWebviewReady = false;
 
     constructor(private readonly _extensionUri: vscode.Uri) {
         this._assetManager = new AssetManager(_extensionUri);
         this._outputChannel = vscode.window.createOutputChannel('Open Review Sidebar');
+        
+        // Set up theme change listener
+        this._setupThemeListener();
+    }
+
+    /**
+     * Set up theme change listener for automatic theme updates
+     */
+    private _setupThemeListener(): void {
+        try {
+            // Listen for theme changes
+            const themeDisposable = vscode.window.onDidChangeActiveColorTheme((theme) => {
+                this._handleThemeChange(theme);
+            });
+            
+            this._disposables.push(themeDisposable);
+            this._outputChannel.appendLine('Theme change listener set up successfully');
+        } catch (error) {
+            this._outputChannel.appendLine(`Error setting up theme listener: ${error}`);
+            console.error('Error setting up theme listener:', error);
+        }
+    }
+
+    /**
+     * Handle VS Code theme changes and notify webview
+     */
+    private _handleThemeChange(theme: vscode.ColorTheme): void {
+        try {
+            const themeType: ThemeType = theme.kind === vscode.ColorThemeKind.Light ? 'light' : 'dark';
+            this._outputChannel.appendLine(`Theme changed to: ${themeType}`);
+            
+            if (this._isWebviewReady && this._view) {
+                this._sendMessageToWebview({
+                    type: 'themeChanged',
+                    payload: { theme: themeType }
+                });
+            }
+        } catch (error) {
+            this._outputChannel.appendLine(`Error handling theme change: ${error}`);
+            console.error('Error handling theme change:', error);
+        }
+    }
+
+    /**
+     * Send message to webview with error handling
+     */
+    private _sendMessageToWebview(message: ExtensionMessage): void {
+        try {
+            if (!this._view) {
+                throw new Error('Webview not available');
+            }
+            
+            this._view.webview.postMessage(message);
+            this._outputChannel.appendLine(`Sent message to webview: ${message.type}`);
+        } catch (error) {
+            this._outputChannel.appendLine(`Error sending message to webview: ${error}`);
+            console.error('Error sending message to webview:', error);
+        }
+    }
+
+    /**
+     * Update threads and notify webview
+     */
+    public updateThreads(threads: CommentThread[]): void {
+        try {
+            this._threads = [...threads];
+            this._outputChannel.appendLine(`Updated threads: ${threads.length} threads`);
+            
+            if (this._isWebviewReady && this._view) {
+                this._sendMessageToWebview({
+                    type: 'updateThreads',
+                    payload: { threads: this._threads }
+                });
+            }
+        } catch (error) {
+            this._outputChannel.appendLine(`Error updating threads: ${error}`);
+            console.error('Error updating threads:', error);
+        }
+    }
+
+    /**
+     * Navigate to file location
+     */
+    private async _navigateToFile(filePath: string, lineNumber?: number): Promise<void> {
+        try {
+            this._outputChannel.appendLine(`Navigating to file: ${filePath}:${lineNumber || 1}`);
+            
+            // Resolve the file path relative to workspace
+            const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+            if (!workspaceFolder) {
+                throw new Error('No workspace folder found');
+            }
+            
+            const fileUri = vscode.Uri.joinPath(workspaceFolder.uri, filePath);
+            
+            // Open the document
+            const document = await vscode.workspace.openTextDocument(fileUri);
+            const editor = await vscode.window.showTextDocument(document);
+            
+            // Navigate to specific line if provided
+            if (lineNumber && lineNumber > 0) {
+                const position = new vscode.Position(Math.max(0, lineNumber - 1), 0);
+                editor.selection = new vscode.Selection(position, position);
+                editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+            }
+            
+            this._outputChannel.appendLine(`Successfully navigated to ${filePath}:${lineNumber || 1}`);
+        } catch (error) {
+            this._outputChannel.appendLine(`Error navigating to file: ${error}`);
+            console.error('Error navigating to file:', error);
+            
+            // Show user-friendly error message
+            vscode.window.showErrorMessage(
+                `Failed to navigate to ${filePath}${lineNumber ? `:${lineNumber}` : ''}: ${error instanceof Error ? error.message : String(error)}`
+            );
+        }
+    }
+
+    /**
+     * Handle webview initialization
+     */
+    private _handleWebviewReady(): void {
+        try {
+            this._isWebviewReady = true;
+            this._outputChannel.appendLine('Webview ready - sending initial data');
+            
+            // Send initial theme
+            const currentTheme = vscode.window.activeColorTheme;
+            const themeType: ThemeType = currentTheme.kind === vscode.ColorThemeKind.Light ? 'light' : 'dark';
+            
+            this._sendMessageToWebview({
+                type: 'themeChanged',
+                payload: { theme: themeType }
+            });
+            
+            // Send initial threads if available
+            if (this._threads.length > 0) {
+                this._sendMessageToWebview({
+                    type: 'updateThreads',
+                    payload: { threads: this._threads }
+                });
+            }
+        } catch (error) {
+            this._outputChannel.appendLine(`Error handling webview ready: ${error}`);
+            console.error('Error handling webview ready:', error);
+        }
     }
 
     public resolveWebviewView(
@@ -40,7 +190,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             this._loadWebviewContent(webviewView);
 
             // Handle messages from the webview
-            webviewView.webview.onDidReceiveMessage(
+            const messageDisposable = webviewView.webview.onDidReceiveMessage(
                 message => {
                     try {
                         this._handleWebviewMessage(message);
@@ -50,7 +200,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     }
                 },
                 undefined,
-                []
+                this._disposables
             );
 
             this._outputChannel.appendLine('Webview initialized successfully');
@@ -136,27 +286,42 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     }
 
     /**
-     * Handles messages from the webview with error handling
+     * Handles messages from the webview with enhanced message handling
      */
-    private _handleWebviewMessage(message: any): void {
+    private _handleWebviewMessage(message: WebviewMessage): void {
         this._outputChannel.appendLine(`Received webview message: ${JSON.stringify(message)}`);
         
-        switch (message.command) {
-            case 'alert':
-                vscode.window.showErrorMessage(message.text);
-                break;
-            case 'error':
-                this._outputChannel.appendLine(`Webview reported error: ${message.error}`);
-                console.error('Webview error:', message.error);
-                break;
-            case 'log':
-                this._outputChannel.appendLine(`Webview log: ${message.message}`);
-                break;
-            case 'ready':
-                this._outputChannel.appendLine('Webview reported ready state');
-                break;
-            default:
-                this._outputChannel.appendLine(`Unknown webview message command: ${message.command}`);
+        try {
+            switch (message.type) {
+                case 'ready':
+                    this._outputChannel.appendLine('Webview reported ready state');
+                    this._handleWebviewReady();
+                    break;
+                    
+                case 'replyToThread':
+                    this._outputChannel.appendLine(`Reply to thread: ${message.payload.threadId}`);
+                    // Execute the reply command with the thread ID and content
+                    vscode.commands.executeCommand('openReview.replyToThread', 
+                        message.payload.threadId, message.payload.content, message.payload.author.name);
+                    break;
+                    
+                case 'resolveThread':
+                    this._outputChannel.appendLine(`Resolve thread: ${message.payload.threadId}`);
+                    // Execute the resolve command with the thread ID
+                    vscode.commands.executeCommand('openReview.resolveThread', message.payload.threadId);
+                    break;
+                    
+                case 'navigateToLocation':
+                    this._outputChannel.appendLine(`Navigate to: ${message.payload.filePath}:${message.payload.lineNumber}`);
+                    this._navigateToFile(message.payload.filePath, message.payload.lineNumber);
+                    break;
+                    
+                default:
+                    this._outputChannel.appendLine(`Unknown webview message type: ${(message as any).type}`);
+            }
+        } catch (error) {
+            this._outputChannel.appendLine(`Error processing webview message: ${error}`);
+            console.error('Error processing webview message:', error);
         }
     }
 
@@ -173,7 +338,20 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
     public dispose(): void {
         try {
             this._outputChannel.appendLine('Disposing sidebar provider...');
+            
+            // Dispose all registered disposables
+            this._disposables.forEach(disposable => {
+                try {
+                    disposable.dispose();
+                } catch (error) {
+                    console.error('Error disposing resource:', error);
+                }
+            });
+            this._disposables = [];
+            
+            // Dispose asset manager
             this._assetManager.dispose();
+            
             this._outputChannel.appendLine('Sidebar provider disposed successfully');
             this._outputChannel.dispose();
         } catch (error) {
@@ -250,8 +428,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     // Send error to extension for logging
                     const vscode = acquireVsCodeApi();
                     vscode.postMessage({
-                        command: 'error',
-                        error: '${this._escapeHtml(errorMessage)}'
+                        type: 'error',
+                        payload: { error: '${this._escapeHtml(errorMessage)}' }
                     });
                 </script>
             </body>
@@ -320,8 +498,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 <script>
                     const vscode = acquireVsCodeApi();
                     vscode.postMessage({
-                        command: 'error',
-                        error: 'TypeScript compilation error: ${this._escapeHtml(errorMessage)}'
+                        type: 'error',
+                        payload: { error: 'TypeScript compilation error: ${this._escapeHtml(errorMessage)}' }
                     });
                 </script>
             </body>
@@ -414,8 +592,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                 <script>
                     const vscode = acquireVsCodeApi();
                     vscode.postMessage({
-                        command: 'error',
-                        error: 'Dev server error: ${this._escapeHtml(errorMessage)}'
+                        type: 'error',
+                        payload: { error: 'Dev server error: ${this._escapeHtml(errorMessage)}' }
                     });
                 </script>
             </body>
