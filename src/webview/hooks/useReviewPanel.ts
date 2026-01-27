@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ReviewPanelState } from '../types/components';
-import { FilterType, ExtensionMessage } from '../types';
+import { FilterType, ExtensionMessage, ThreadCounts } from '../types';
 import { VSCodeAPIWrapper } from '../api/VSCodeAPIWrapper';
 import { ThemeUtils } from '../utils/themeUtils';
 
@@ -194,12 +194,27 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
     ThemeUtils.applyTheme(state.theme);
   }, [state.theme]);
 
+  /**
+   * Calculate thread counts for filter tabs
+   */
+  const threadCounts = useMemo((): ThreadCounts => {
+    const openCount = state.threads.filter(thread => thread.status === 'open').length;
+    const resolvedCount = state.threads.filter(thread => thread.status === 'resolved').length;
+    
+    return {
+      all: state.threads.length,
+      open: openCount,
+      resolved: resolvedCount
+    };
+  }, [state.threads]);
+
   return {
     // State
     state,
     isLoading,
     error,
     isInitialized,
+    threadCounts,
     
     // Actions
     handleFilterChange,
