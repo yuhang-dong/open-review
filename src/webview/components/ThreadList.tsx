@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { ThreadListProps } from '../types/components';
 import { CommentThread } from '../types';
+import './ThreadList.css';
+import './ThreadCard.css';
 
 /**
  * ThreadList component for rendering filtered thread collections

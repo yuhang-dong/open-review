@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SearchBarProps } from '../types/components';
+import './SearchBar.css';
 
 /**
  * SearchBar component for searching through comments

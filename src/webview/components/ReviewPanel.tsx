@@ -6,6 +6,7 @@ import ErrorState from './ErrorState';
 import FilterTabs from './FilterTabs';
 import SearchBar from './SearchBar';
 import ThreadList from './ThreadList';
+import './ReviewPanel.css';
 
 /**
  * Root component for the Code Review Webview Panel

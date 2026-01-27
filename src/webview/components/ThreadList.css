@@ -1,0 +1,88 @@
+/* ThreadList Component Styles */
+
+.thread-list {
+  background-color: var(--crw-primary-bg);
+  padding: var(--crw-spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--crw-spacing-sm);
+  overflow-y: auto;
+}
+
+/* Loading state */
+.thread-list--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.thread-list__loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--crw-spacing-md);
+  color: var(--crw-text-secondary);
+}
+
+.thread-list__loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--crw-border-color);
+  border-top: 2px solid var(--crw-accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.thread-list__loading-text {
+  font-size: var(--crw-font-size-sm);
+  color: var(--crw-text-secondary);
+}
+
+/* Empty state */
+.thread-list--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.thread-list__empty-state {
+  text-align: center;
+  max-width: 300px;
+  padding: var(--crw-spacing-xl);
+}
+
+.thread-list__empty-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--crw-spacing-lg);
+  color: var(--crw-text-muted);
+}
+
+.thread-list__empty-title {
+  margin: 0 0 var(--crw-spacing-md) 0;
+  font-size: var(--crw-font-size-lg);
+  font-weight: 600;
+  color: var(--crw-text-primary);
+}
+
+.thread-list__empty-description {
+  margin: 0;
+  font-size: var(--crw-font-size-sm);
+  color: var(--crw-text-secondary);
+  line-height: var(--crw-line-height-relaxed);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .thread-list {
+    padding: var(--crw-spacing-sm);
+  }
+}
+
+@media (max-width: 320px) {
+  .thread-list {
+    padding: var(--crw-spacing-xs);
+  }
+}

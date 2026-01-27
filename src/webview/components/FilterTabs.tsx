@@ -1,6 +1,7 @@
 import React from 'react';
 import { FilterTabsProps } from '../types/components';
 import { FilterType } from '../types';
+import './FilterTabs.css';
 
 /**
  * FilterTabs component for filtering comment threads by status
