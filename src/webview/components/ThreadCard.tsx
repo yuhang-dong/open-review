@@ -108,6 +108,17 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: i
   };
 
   /**
+   * Handle thread reopening
+   */
+  const handleReopen = () => {
+    onAction({
+      type: 'reopen',
+      threadId: thread.id,
+      payload: {}
+    });
+  };
+
+  /**
    * Extract filename from file path
    */
   const getFileName = (filePath: string): string => {
@@ -232,14 +243,23 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: i
             />
           )}
 
-          {/* Resolve button (only for open threads) */}
-          {thread.status === 'open' && (
+          {/* Resolve/Reopen button */}
+          {thread.status === 'open' ? (
             <div className="thread-card__resolve-section">
               <button 
                 className="thread-card__resolve-btn"
                 onClick={handleResolve}
               >
                 Resolve Thread
+              </button>
+            </div>
+          ) : (
+            <div className="thread-card__resolve-section">
+              <button 
+                className="thread-card__reopen-btn"
+                onClick={handleReopen}
+              >
+                Reopen Thread
               </button>
             </div>
           )}

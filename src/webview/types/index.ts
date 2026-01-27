@@ -86,7 +86,7 @@ export interface FilteredThreadsResult {
  * Actions that can be performed on threads
  */
 export interface ThreadAction {
-  type: 'reply' | 'resolve' | 'navigate';
+  type: 'reply' | 'resolve' | 'reopen' | 'navigate';
   threadId: string;
   payload?: any;
 }
@@ -129,6 +129,10 @@ export interface ResolveThreadPayload {
   threadId: string;
 }
 
+export interface ReopenThreadPayload {
+  threadId: string;
+}
+
 export interface NavigateToLocationPayload {
   filePath: string;
   lineNumber: number;
@@ -152,5 +156,6 @@ export type ExtensionMessage =
 export type WebviewMessage = 
   | { type: 'replyToThread'; payload: ReplyToThreadPayload }
   | { type: 'resolveThread'; payload: ResolveThreadPayload }
+  | { type: 'reopenThread'; payload: ReopenThreadPayload }
   | { type: 'navigateToLocation'; payload: NavigateToLocationPayload }
   | { type: 'ready'; payload: ReadyPayload };

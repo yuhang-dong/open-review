@@ -389,6 +389,29 @@
   font-size: 14px;
 }
 
+.thread-card__reopen-btn {
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--crw-transition-fast);
+  font-family: var(--vscode-font-family);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  border: 1px solid;
+}
+
+.thread-card__reopen-btn::before {
+  content: '↻';
+  font-size: 14px;
+}
+
 /* Dark theme resolve button */
 .theme-dark .thread-card__resolve-btn {
   background-color: #1e3a1e;
@@ -400,6 +423,17 @@
   background-color: #2d4a2d;
 }
 
+/* Dark theme reopen button */
+.theme-dark .thread-card__reopen-btn {
+  background-color: #1e1e1e;
+  color: #007acc;
+  border-color: #007acc;
+}
+
+.theme-dark .thread-card__reopen-btn:hover {
+  background-color: #2d2d30;
+}
+
 /* Light theme resolve button */
 .theme-light .thread-card__resolve-btn {
   background-color: #dafbe1;
@@ -409,6 +443,17 @@
 
 .theme-light .thread-card__resolve-btn:hover {
   background-color: #c8f0d0;
+}
+
+/* Light theme reopen button */
+.theme-light .thread-card__reopen-btn {
+  background-color: #ddf4ff;
+  color: #0969da;
+  border-color: #0969da;
+}
+
+.theme-light .thread-card__reopen-btn:hover {
+  background-color: #b6e3ff;
 }
 
 /* Dark theme specific styles */

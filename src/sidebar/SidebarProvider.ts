@@ -311,6 +311,12 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     vscode.commands.executeCommand('openReview.resolveThread', message.payload.threadId);
                     break;
                     
+                case 'reopenThread':
+                    this._outputChannel.appendLine(`Reopen thread: ${message.payload.threadId}`);
+                    // Execute the reopen command with the thread ID
+                    vscode.commands.executeCommand('openReview.reopenThread', message.payload.threadId);
+                    break;
+                    
                 case 'navigateToLocation':
                     this._outputChannel.appendLine(`Navigate to: ${message.payload.filePath}:${message.payload.lineNumber}`);
                     this._navigateToFile(message.payload.filePath, message.payload.lineNumber);

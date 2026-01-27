@@ -104,6 +104,10 @@ export function activate(context: vscode.ExtensionContext) {
 		commentCommands.resolveThread(threadId);
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.reopenThread', (threadId: string) => {
+		commentCommands.reopenThread(threadId);
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.replyToThread', (threadId: string, content: string, authorName: string) => {
 		commentCommands.replyToThread(threadId, content, authorName);
 	}));

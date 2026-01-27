@@ -92,7 +92,7 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
   }, [vscode]);
 
   /**
-   * Handle thread actions (reply, resolve, navigate)
+   * Handle thread actions (reply, resolve, reopen, navigate)
    */
   const handleThreadAction = useCallback((action: ThreadAction) => {
     try {
@@ -123,6 +123,15 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
         case 'resolve':
           vscode.postMessage({
             type: 'resolveThread',
+            payload: {
+              threadId: action.threadId
+            }
+          });
+          break;
+          
+        case 'reopen':
+          vscode.postMessage({
+            type: 'reopenThread',
             payload: {
               threadId: action.threadId
             }

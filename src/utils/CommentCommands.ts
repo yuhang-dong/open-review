@@ -144,6 +144,13 @@ export class CommentCommands {
 	}
 
 	/**
+	 * Reopen a thread from webview
+	 */
+	public reopenThread(threadId: string): void {
+		this.threadManager.reopenThread(threadId);
+	}
+
+	/**
 	 * Reply to a thread from webview
 	 */
 	public replyToThread(threadId: string, content: string, authorName: string): void {

@@ -155,6 +155,19 @@ export class ThreadManager {
 	}
 
 	/**
+	 * Reopen thread
+	 */
+	public reopenThread(customId: string): void {
+		const thread = this.findThreadById(customId);
+		if (thread) {
+			thread.state = vscode.CommentThreadState.Unresolved;
+			const existingContext = thread.contextValue || '';
+			thread.contextValue = existingContext.replace('|resolved', '').replace('resolved', '');
+			this.updateThreadTimestamp(thread);
+		}
+	}
+
+	/**
 	 * Reply to thread
 	 */
 	public replyToThread(customId: string, content: string, authorName: string): void {
