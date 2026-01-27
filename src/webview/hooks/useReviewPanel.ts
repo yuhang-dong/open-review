@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ReviewPanelState } from '../types/components';
-import { FilterType, ExtensionMessage, ThreadCounts } from '../types';
+import { FilterType, ExtensionMessage, ThreadCounts, CommentThread, ThreadAction } from '../types';
 import { VSCodeAPIWrapper } from '../api/VSCodeAPIWrapper';
 import { ThemeUtils } from '../utils/themeUtils';
 
@@ -90,6 +90,79 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
       return newState;
     });
   }, [vscode]);
+
+  /**
+   * Handle thread actions (reply, resolve, navigate)
+   */
+  const handleThreadAction = useCallback((action: ThreadAction) => {
+    try {
+      switch (action.type) {
+        case 'navigate':
+          vscode.postMessage({
+            type: 'navigateToLocation',
+            payload: {
+              filePath: action.payload.filePath,
+              lineNumber: action.payload.lineNumber
+            }
+          });
+          break;
+          
+        case 'resolve':
+          vscode.postMessage({
+            type: 'resolveThread',
+            payload: {
+              threadId: action.threadId
+            }
+          });
+          break;
+          
+        case 'reply':
+          // For now, just log the reply action
+          // The actual reply functionality will be implemented in the ReplySystem component
+          console.log('Reply action triggered for thread:', action.threadId);
+          break;
+          
+        default:
+          console.warn('Unknown thread action type:', action.type);
+      }
+    } catch (error) {
+      console.error('Failed to handle thread action:', error);
+      setError(error instanceof Error ? error.message : 'Failed to handle thread action');
+    }
+  }, [vscode]);
+
+  /**
+   * Filter and search threads based on current state
+   */
+  const filteredThreads = useMemo((): CommentThread[] => {
+    let filtered = state.threads;
+
+    // Apply status filter
+    if (state.activeFilter !== 'all') {
+      filtered = filtered.filter(thread => thread.status === state.activeFilter);
+    }
+
+    // Apply search filter
+    if (state.searchQuery.trim()) {
+      const query = state.searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(thread => {
+        // Search in file path
+        if (thread.filePath.toLowerCase().includes(query)) {
+          return true;
+        }
+        
+        // Search in comment content
+        const hasMatchingComment = thread.comments.some(comment => 
+          comment.content.toLowerCase().includes(query) ||
+          comment.author.name.toLowerCase().includes(query)
+        );
+        
+        return hasMatchingComment;
+      });
+    }
+
+    return filtered;
+  }, [state.threads, state.activeFilter, state.searchQuery]);
 
   /**
    * Initialize webview communication and state
@@ -215,10 +288,12 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
     error,
     isInitialized,
     threadCounts,
+    filteredThreads,
     
     // Actions
     handleFilterChange,
     handleSearchChange,
+    handleThreadAction,
     
     // Utilities
     setError

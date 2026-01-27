@@ -5,6 +5,7 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import FilterTabs from './FilterTabs';
 import SearchBar from './SearchBar';
+import ThreadList from './ThreadList';
 
 /**
  * Root component for the Code Review Webview Panel
@@ -23,8 +24,10 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ vscode }) => {
     error,
     isInitialized,
     threadCounts,
+    filteredThreads,
     handleFilterChange,
     handleSearchChange,
+    handleThreadAction,
     setError
   } = useReviewPanel(vscode);
 
@@ -70,7 +73,10 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ vscode }) => {
           placeholder="Search comments..."
         />
         
-        {/* Thread list will be added in task 6.1 */}
+        <ThreadList
+          threads={filteredThreads}
+          onThreadAction={handleThreadAction}
+        />
         
         <div className="review-panel__status">
           <div className="review-panel__status-item">
