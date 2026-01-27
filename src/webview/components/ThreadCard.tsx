@@ -46,16 +46,33 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: i
 
   /**
    * Handle file location navigation
+   * Validates file path and line number before sending navigation request
    */
   const handleNavigateToFile = () => {
-    onAction({
-      type: 'navigate',
-      threadId: thread.id,
-      payload: {
-        filePath: thread.filePath,
-        lineNumber: thread.lineNumber
-      }
-    });
+    // Validate file path
+    if (!thread.filePath || thread.filePath.trim() === '') {
+      console.error('Invalid file path: empty or undefined');
+      return;
+    }
+
+    // Validate line number
+    if (thread.lineNumber === undefined || thread.lineNumber === null || thread.lineNumber < 1) {
+      console.error('Invalid line number:', thread.lineNumber);
+      return;
+    }
+
+    try {
+      onAction({
+        type: 'navigate',
+        threadId: thread.id,
+        payload: {
+          filePath: thread.filePath,
+          lineNumber: thread.lineNumber
+        }
+      });
+    } catch (error) {
+      console.error('Failed to navigate to file location:', error);
+    }
   };
 
   /**
@@ -110,7 +127,16 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: i
           <div 
             className="thread-card__file-badge" 
             onClick={handleNavigateToFile}
-            title={thread.filePath}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleNavigateToFile();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            title={`Navigate to ${thread.filePath}:${thread.lineNumber}`}
+            aria-label={`Navigate to ${getFileName(thread.filePath)} line ${thread.lineNumber}`}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />

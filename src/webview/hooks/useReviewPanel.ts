@@ -98,6 +98,19 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
     try {
       switch (action.type) {
         case 'navigate':
+          // Validate navigation payload
+          if (!action.payload?.filePath || typeof action.payload.filePath !== 'string') {
+            console.error('Invalid navigation payload: missing or invalid filePath');
+            setError('Cannot navigate: invalid file path');
+            return;
+          }
+          
+          if (!action.payload?.lineNumber || typeof action.payload.lineNumber !== 'number' || action.payload.lineNumber < 1) {
+            console.error('Invalid navigation payload: missing or invalid lineNumber');
+            setError('Cannot navigate: invalid line number');
+            return;
+          }
+          
           vscode.postMessage({
             type: 'navigateToLocation',
             payload: {
