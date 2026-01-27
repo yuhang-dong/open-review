@@ -102,6 +102,9 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
         setIsLoading(true);
         setError(null);
 
+        // Apply initial theme to document
+        ThemeUtils.applyTheme(state.theme);
+
         // Set up message handlers
         const unsubscribeUpdateThreads = vscode.onDidReceiveMessage('updateThreads', (message: ExtensionMessage) => {
           if (message.type === 'updateThreads' && mounted) {
@@ -115,10 +118,13 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
 
         const unsubscribeThemeChanged = vscode.onDidReceiveMessage('themeChanged', (message: ExtensionMessage) => {
           if (message.type === 'themeChanged' && mounted) {
+            const newTheme = message.payload.theme;
             setState(prev => ({
               ...prev,
-              theme: message.payload.theme
+              theme: newTheme
             }));
+            // Apply theme immediately to document
+            ThemeUtils.applyTheme(newTheme);
           }
         });
 
@@ -180,6 +186,13 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
       unsubscribersRef.current = [];
     };
   }, [vscode, restorePersistedState]);
+
+  /**
+   * Apply theme changes to document when theme state changes
+   */
+  useEffect(() => {
+    ThemeUtils.applyTheme(state.theme);
+  }, [state.theme]);
 
   return {
     // State
