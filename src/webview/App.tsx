@@ -1,16 +1,14 @@
 import React from 'react';
 import { ReviewPanel } from './components';
-import { VSCodeAPI } from './types';
-
-// Declare VS Code API
-declare const acquireVsCodeApi: () => VSCodeAPI;
+import { getVSCodeAPIWrapper } from './api';
 
 const App: React.FC = () => {
-  const vscode = acquireVsCodeApi();
+  // Use our API wrapper instead of raw VS Code API
+  const vscodeWrapper = getVSCodeAPIWrapper();
 
   return (
     <div className="app">
-      <ReviewPanel vscode={vscode} />
+      <ReviewPanel vscode={vscodeWrapper} />
     </div>
   );
 };

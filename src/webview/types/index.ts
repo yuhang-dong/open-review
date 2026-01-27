@@ -97,17 +97,56 @@ export interface VSCodeAPI {
 }
 
 /**
+ * Specific payload types for extension messages
+ */
+export interface UpdateThreadsPayload {
+  threads: CommentThread[];
+}
+
+export interface ThemeChangedPayload {
+  theme: ThemeType;
+}
+
+export interface NavigateToFilePayload {
+  filePath: string;
+  lineNumber?: number;
+}
+
+/**
+ * Specific payload types for webview messages
+ */
+export interface ReplyToThreadPayload {
+  threadId: string;
+  content: string;
+  author: Author;
+}
+
+export interface ResolveThreadPayload {
+  threadId: string;
+}
+
+export interface NavigateToLocationPayload {
+  filePath: string;
+  lineNumber: number;
+}
+
+export interface ReadyPayload {
+  // Empty payload for initialization
+}
+
+/**
  * Messages sent from extension host to webview
  */
-export interface ExtensionMessage {
-  type: 'updateThreads' | 'themeChanged' | 'navigateToFile';
-  payload: any;
-}
+export type ExtensionMessage = 
+  | { type: 'updateThreads'; payload: UpdateThreadsPayload }
+  | { type: 'themeChanged'; payload: ThemeChangedPayload }
+  | { type: 'navigateToFile'; payload: NavigateToFilePayload };
 
 /**
  * Messages sent from webview to extension host
  */
-export interface WebviewMessage {
-  type: 'replyToThread' | 'resolveThread' | 'navigateToLocation' | 'ready';
-  payload: any;
-}
+export type WebviewMessage = 
+  | { type: 'replyToThread'; payload: ReplyToThreadPayload }
+  | { type: 'resolveThread'; payload: ResolveThreadPayload }
+  | { type: 'navigateToLocation'; payload: NavigateToLocationPayload }
+  | { type: 'ready'; payload: ReadyPayload };

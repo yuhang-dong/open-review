@@ -5,15 +5,15 @@ import {
   FilterType, 
   ThreadCounts, 
   ThreadAction, 
-  VSCodeAPI, 
   ThemeType 
 } from './index';
+import { VSCodeAPIWrapper } from '../api';
 
 /**
  * Props for the root ReviewPanel component
  */
 export interface ReviewPanelProps {
-  vscode: VSCodeAPI;
+  vscode: VSCodeAPIWrapper;
 }
 
 /**

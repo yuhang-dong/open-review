@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ReviewPanelProps, ReviewPanelState } from '../types/components';
-import { CommentThread, ExtensionMessage, FilterType, ThemeType } from '../types';
+import { FilterType, ExtensionMessage } from '../types';
 
 /**
  * Root component for the Code Review Webview Panel
@@ -15,41 +15,40 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ vscode }) => {
   });
 
   useEffect(() => {
-    // Initialize webview communication
-    const handleMessage = (event: MessageEvent<ExtensionMessage>) => {
-      const message = event.data;
-      
-      switch (message.type) {
-        case 'updateThreads':
-          setState(prev => ({
-            ...prev,
-            threads: message.payload as CommentThread[]
-          }));
-          break;
-          
-        case 'themeChanged':
-          setState(prev => ({
-            ...prev,
-            theme: message.payload as ThemeType
-          }));
-          break;
-          
-        case 'navigateToFile':
-          // Handle file navigation response
-          break;
-          
-        default:
-          console.warn('Unknown message type:', message.type);
+    // Set up message handlers using our API wrapper
+    const unsubscribeUpdateThreads = vscode.onDidReceiveMessage('updateThreads', (message: ExtensionMessage) => {
+      if (message.type === 'updateThreads') {
+        setState(prev => ({
+          ...prev,
+          threads: message.payload.threads
+        }));
       }
-    };
+    });
 
-    window.addEventListener('message', handleMessage);
-    
-    // Send ready message to extension host
-    vscode.postMessage({ type: 'ready', payload: null });
+    const unsubscribeThemeChanged = vscode.onDidReceiveMessage('themeChanged', (message: ExtensionMessage) => {
+      if (message.type === 'themeChanged') {
+        setState(prev => ({
+          ...prev,
+          theme: message.payload.theme
+        }));
+      }
+    });
 
+    const unsubscribeNavigateToFile = vscode.onDidReceiveMessage('navigateToFile', (message: ExtensionMessage) => {
+      if (message.type === 'navigateToFile') {
+        // Handle file navigation response
+        console.log('Navigate to file:', message.payload);
+      }
+    });
+
+    // Initialize the webview
+    vscode.initialize();
+
+    // Cleanup subscriptions on unmount
     return () => {
-      window.removeEventListener('message', handleMessage);
+      unsubscribeUpdateThreads();
+      unsubscribeThemeChanged();
+      unsubscribeNavigateToFile();
     };
   }, [vscode]);
 
