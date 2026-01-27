@@ -7,6 +7,7 @@
   padding: 0 16px;
   background-color: var(--crw-primary-bg);
   gap: 0;
+  flex-shrink: 0;
 }
 
 .filter-tabs__tab {
@@ -53,6 +54,7 @@
 .theme-dark .filter-tabs__tab--active {
   background-color: #2d2d30;
   color: #cccccc;
+  font-weight: 600;
 }
 
 .theme-dark .filter-tabs__tab:hover:not(.filter-tabs__tab--active) {
@@ -72,6 +74,7 @@
   background-color: #f6f8fa;
   color: #24292e;
   border: 1px solid #e1e4e8;
+  font-weight: 600;
 }
 
 .theme-light .filter-tabs__tab:hover:not(.filter-tabs__tab--active) {

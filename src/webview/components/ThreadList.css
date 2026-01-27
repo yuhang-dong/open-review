@@ -2,11 +2,22 @@
 
 .thread-list {
   background-color: var(--crw-primary-bg);
-  padding: var(--crw-spacing-md);
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: var(--crw-spacing-sm);
+  gap: 8px;
   overflow-y: auto;
+  flex: 1;
+}
+
+/* Dark theme specific styles */
+.theme-dark .thread-list {
+  background-color: #1e1e1e;
+}
+
+/* Light theme specific styles */
+.theme-light .thread-list {
+  background-color: #ffffff;
 }
 
 /* Loading state */
@@ -77,12 +88,12 @@
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .thread-list {
-    padding: var(--crw-spacing-sm);
+    padding: 8px;
   }
 }
 
 @media (max-width: 320px) {
   .thread-list {
-    padding: var(--crw-spacing-xs);
+    padding: 4px;
   }
 }

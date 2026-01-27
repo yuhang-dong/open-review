@@ -239,7 +239,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: i
                 className="thread-card__resolve-btn"
                 onClick={handleResolve}
               >
-                ✓ Resolve Thread
+                Resolve Thread
               </button>
             </div>
           )}

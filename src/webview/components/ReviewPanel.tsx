@@ -61,88 +61,22 @@ const ReviewPanel: React.FC<ReviewPanelProps> = ({ vscode }) => {
         <p className="review-panel__subtitle">Code review comments and discussions</p>
       </div>
       
-      <div className="review-panel__content">
-        <FilterTabs
-          activeFilter={state.activeFilter}
-          onFilterChange={handleFilterChange}
-          threadCounts={threadCounts}
-        />
-        
-        <SearchBar
-          searchQuery={state.searchQuery}
-          onSearchChange={handleSearchChange}
-          placeholder="Search comments..."
-        />
-        
-        <ThreadList
-          threads={filteredThreads}
-          onThreadAction={handleThreadAction}
-        />
-        
-        <div className="review-panel__status">
-          <div className="review-panel__status-item">
-            <strong>Status:</strong> {isInitialized ? 'Connected' : 'Initializing...'}
-          </div>
-          <div className="review-panel__status-item">
-            <strong>Theme:</strong> {state.theme}
-          </div>
-          <div className="review-panel__status-item">
-            <strong>Threads:</strong> {state.threads.length}
-          </div>
-          <div className="review-panel__status-item">
-            <strong>Filter:</strong> {state.activeFilter}
-          </div>
-          {state.searchQuery && (
-            <div className="review-panel__status-item">
-              <strong>Search:</strong> "{state.searchQuery}"
-            </div>
-          )}
-        </div>
-        
-        {/* Development controls - will be removed when child components are added */}
-        <div className="review-panel__dev-controls" style={{ marginBottom: '16px', padding: '12px', border: '1px dashed var(--vscode-panel-border)', borderRadius: '4px' }}>
-          <h4 style={{ margin: '0 0 8px 0', fontSize: '12px', color: 'var(--vscode-descriptionForeground)' }}>Development Controls (Task 3.1)</h4>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <button 
-              onClick={() => handleFilterChange('all')}
-              style={{ padding: '4px 8px', fontSize: '11px', backgroundColor: 'var(--vscode-button-background)', color: 'var(--vscode-button-foreground)', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-            >
-              Filter: All
-            </button>
-            <button 
-              onClick={() => handleFilterChange('open')}
-              style={{ padding: '4px 8px', fontSize: '11px', backgroundColor: 'var(--vscode-button-background)', color: 'var(--vscode-button-foreground)', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-            >
-              Filter: Open
-            </button>
-            <button 
-              onClick={() => handleFilterChange('resolved')}
-              style={{ padding: '4px 8px', fontSize: '11px', backgroundColor: 'var(--vscode-button-background)', color: 'var(--vscode-button-foreground)', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-            >
-              Filter: Resolved
-            </button>
-            <input 
-              type="text"
-              placeholder="Test search..."
-              onChange={(e) => handleSearchChange(e.target.value)}
-              style={{ padding: '4px 8px', fontSize: '11px', backgroundColor: 'var(--vscode-input-background)', color: 'var(--vscode-input-foreground)', border: '1px solid var(--vscode-input-border)', borderRadius: '2px' }}
-            />
-          </div>
-        </div>
-        
-        <div className="review-panel__placeholder">
-          <h3>Review Panel Ready</h3>
-          <p>The core ReviewPanel component is now implemented with:</p>
-          <ul>
-            <li>✅ State management for threads, filters, and search</li>
-            <li>✅ VS Code API communication with React lifecycle</li>
-            <li>✅ Theme detection and automatic theme switching</li>
-            <li>✅ Error handling and loading states</li>
-            <li>✅ State persistence between sessions</li>
-          </ul>
-          <p>Child components (FilterTabs, SearchBar, ThreadList) will be added in subsequent tasks.</p>
-        </div>
-      </div>
+      <FilterTabs
+        activeFilter={state.activeFilter}
+        onFilterChange={handleFilterChange}
+        threadCounts={threadCounts}
+      />
+      
+      <SearchBar
+        searchQuery={state.searchQuery}
+        onSearchChange={handleSearchChange}
+        placeholder="Search comments..."
+      />
+      
+      <ThreadList
+        threads={filteredThreads}
+        onThreadAction={handleThreadAction}
+      />
     </div>
   );
 };

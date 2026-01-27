@@ -115,16 +115,17 @@
   height: 18px;
   display: inline-flex;
   align-items: center;
+  font-size: 10px;
 }
 
 .thread-card__status--open {
-  background-color: #f66a0a;
-  color: #ffffff;
+  background-color: #ddf4ff;
+  color: #0969da;
 }
 
 .thread-card__status--resolved {
-  background-color: #28a745;
-  color: #ffffff;
+  background-color: #dafbe1;
+  color: #1a7f37;
 }
 
 /* Expand/Collapse button */
@@ -258,8 +259,8 @@
 .thread-card__reply-btn {
   width: 100%;
   padding: 8px 16px;
-  background-color: #007acc;
-  color: #ffffff;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
   border: none;
   border-radius: 4px;
   font-size: 12px;
@@ -271,11 +272,12 @@
 }
 
 .thread-card__reply-btn:hover {
-  background-color: #005a9e;
+  background-color: var(--vscode-button-hoverBackground);
 }
 
 .thread-card__reply-btn:active {
-  background-color: #004578;
+  background-color: var(--vscode-button-hoverBackground);
+  opacity: 0.9;
 }
 
 /* Reply form */
@@ -366,10 +368,7 @@
 
 .thread-card__resolve-btn {
   width: 100%;
-  padding: 8px 16px;
-  background-color: #28a745;
-  color: #ffffff;
-  border: none;
+  padding: 6px 12px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
@@ -377,14 +376,39 @@
   transition: background-color var(--crw-transition-fast);
   font-family: var(--vscode-font-family);
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  border: 1px solid;
 }
 
-.thread-card__resolve-btn:hover {
-  background-color: #1e7e34;
+.thread-card__resolve-btn::before {
+  content: '✓';
+  font-size: 14px;
 }
 
-.thread-card__resolve-btn:active {
-  background-color: #155724;
+/* Dark theme resolve button */
+.theme-dark .thread-card__resolve-btn {
+  background-color: #1e3a1e;
+  color: #89d185;
+  border-color: #89d185;
+}
+
+.theme-dark .thread-card__resolve-btn:hover {
+  background-color: #2d4a2d;
+}
+
+/* Light theme resolve button */
+.theme-light .thread-card__resolve-btn {
+  background-color: #dafbe1;
+  color: #1a7f37;
+  border-color: #2da44e;
+}
+
+.theme-light .thread-card__resolve-btn:hover {
+  background-color: #c8f0d0;
 }
 
 /* Dark theme specific styles */
@@ -475,13 +499,13 @@
 }
 
 .theme-dark .thread-card__status--open {
-  background-color: #f66a0a;
-  color: #ffffff;
+  background-color: #1e1e1e;
+  color: #007acc;
 }
 
 .theme-dark .thread-card__status--resolved {
-  background-color: #89d185;
-  color: #1e3a1e;
+  background-color: #1e3a1e;
+  color: #89d185;
 }
 
 /* Light theme specific styles */
@@ -575,24 +599,24 @@
 }
 
 .theme-light .thread-card__status--open {
-  background-color: #f66a0a;
-  color: #ffffff;
+  background-color: #ddf4ff;
+  color: #0969da;
 }
 
 .theme-light .thread-card__status--resolved {
-  background-color: #28a745;
-  color: #ffffff;
+  background-color: #dafbe1;
+  color: #1a7f37;
 }
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .thread-card {
-    padding: var(--crw-spacing-sm);
+    padding: 8px;
   }
 }
 
 @media (max-width: 320px) {
   .thread-card {
-    padding: var(--crw-spacing-xs);
+    padding: 4px;
   }
 }

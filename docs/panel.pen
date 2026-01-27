@@ -1549,15 +1549,15 @@
           "width": "fill_container",
           "height": "fill_container",
           "fill": "#ffffff",
-          "layout": "vertical",
-          "gap": 8,
-          "padding": 12,
+          "layout": "none",
           "children": [
             {
               "type": "frame",
               "id": "oUwR2",
+              "x": 12,
+              "y": 12,
               "name": "lc1",
-              "width": "fill_container",
+              "width": "fill_container(376)",
               "fill": "#f6f8fa",
               "cornerRadius": 4,
               "stroke": {
@@ -1822,8 +1822,10 @@
             {
               "type": "frame",
               "id": "4iUJr",
+              "x": 12,
+              "y": 142,
               "name": "lc2",
-              "width": "fill_container",
+              "width": "fill_container(376)",
               "fill": "#f6f8fa",
               "cornerRadius": 4,
               "stroke": {
@@ -2282,8 +2284,10 @@
             {
               "type": "frame",
               "id": "XMlJU",
+              "x": 12,
+              "y": 461,
               "name": "lc3",
-              "width": "fill_container",
+              "width": "fill_container(376)",
               "fill": "#f6f8fa",
               "cornerRadius": 4,
               "stroke": {
