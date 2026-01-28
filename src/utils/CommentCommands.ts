@@ -6,6 +6,18 @@ import { getUserName } from './getUserName';
 export class CommentCommands {
 	constructor(private threadManager: ThreadManager) {}
 
+	private parseNumericNoteCommentIdFromWebviewCommentId(webviewCommentId: string): number | null {
+		// Expected format from ThreadManager.toWebviewFormat():
+		// `${thread.customId}:comment:${noteComment.id}`
+		const match = /:comment:(\d+)$/.exec(webviewCommentId);
+		if (!match) {
+			return null;
+		}
+
+		const numericId = Number(match[1]);
+		return Number.isFinite(numericId) ? numericId : null;
+	}
+
 	/**
 	 * Create a new note/thread
 	 */
@@ -89,6 +101,34 @@ export class CommentCommands {
 	public deleteNote(thread: ExtendedCommentThread): void {
 		thread.dispose();
 		this.threadManager.removeThread(thread);
+	}
+
+	/**
+	 * Delete an entire thread from webview, by threadId
+	 */
+	public deleteThreadById(threadId: string): void {
+		const thread = this.threadManager.findThreadById(threadId);
+		if (!thread) {
+			return;
+		}
+		this.deleteNote(thread);
+	}
+
+	/**
+	 * Delete a specific reply/comment from webview, by threadId + webview commentId
+	 */
+	public deleteCommentById(threadId: string, commentId: string): void {
+		const thread = this.threadManager.findThreadById(threadId);
+		if (!thread) {
+			return;
+		}
+
+		const numericCommentId = this.parseNumericNoteCommentIdFromWebviewCommentId(commentId);
+		if (numericCommentId === null) {
+			return;
+		}
+
+		this.threadManager.removeCommentFromThread(thread, numericCommentId);
 	}
 
 	/**

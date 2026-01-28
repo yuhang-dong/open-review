@@ -340,6 +340,33 @@
                         },
                         {
                           "type": "frame",
+                          "id": "V7OyG",
+                          "name": "c2DeleteBtn",
+                          "width": 26,
+                          "height": 26,
+                          "fill": "#2a1b1b",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#5a2a2a"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "3w3sB",
+                              "name": "c2DeleteIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "trash-2",
+                              "iconFontFamily": "lucide",
+                              "fill": "#e06c75"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
                           "id": "VHjZ4",
                           "name": "c1ExpandBtn",
                           "width": 24,
@@ -612,6 +639,33 @@
                         },
                         {
                           "type": "frame",
+                          "id": "bAO7n",
+                          "name": "c2DeleteBtn",
+                          "width": 26,
+                          "height": 26,
+                          "fill": "#2a1b1b",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#5a2a2a"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "LZ3Nc",
+                              "name": "c2DeleteIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "trash-2",
+                              "iconFontFamily": "lucide",
+                              "fill": "#e06c75"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
                           "id": "FfR7H",
                           "name": "c2CollapseBtn",
                           "width": 24,
@@ -879,6 +933,33 @@
                           "fontFamily": "Inter",
                           "fontSize": 11,
                           "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "O4bw4",
+                          "name": "c2R1DeleteBtn",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "#1e1e1e",
+                          "cornerRadius": 3,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#3e3e42"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "NW0C4",
+                              "name": "c2R1DeleteIcon",
+                              "width": 12,
+                              "height": 12,
+                              "iconFontName": "trash-2",
+                              "iconFontFamily": "lucide",
+                              "fill": "#858585"
+                            }
+                          ]
                         }
                       ]
                     },
@@ -1207,6 +1288,33 @@
                               "fontFamily": "Inter",
                               "fontSize": 10,
                               "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "lkFs2",
+                          "name": "c3DeleteBtn",
+                          "width": 26,
+                          "height": 26,
+                          "fill": "#2a1b1b",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#5a2a2a"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "WfOmH",
+                              "name": "c3DeleteIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "trash-2",
+                              "iconFontFamily": "lucide",
+                              "fill": "#e06c75"
                             }
                           ]
                         },
@@ -1691,6 +1799,33 @@
                         },
                         {
                           "type": "frame",
+                          "id": "hzCxV",
+                          "name": "lc2DeleteBtn",
+                          "width": 26,
+                          "height": 26,
+                          "fill": "#ffeef0",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#fdaeb7"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "yRMtu",
+                              "name": "lc2DeleteIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "trash-2",
+                              "iconFontFamily": "lucide",
+                              "fill": "#d73a49"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
                           "id": "j1QLW",
                           "name": "lc1ExpandBtn",
                           "width": 24,
@@ -1930,6 +2065,33 @@
                         },
                         {
                           "type": "frame",
+                          "id": "SGdnk",
+                          "name": "lc2DeleteBtn",
+                          "width": 26,
+                          "height": 26,
+                          "fill": "#ffeef0",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#fdaeb7"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "e1kiM",
+                              "name": "lc2DeleteIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "trash-2",
+                              "iconFontFamily": "lucide",
+                              "fill": "#d73a49"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
                           "id": "So6hJ",
                           "name": "lc2CollapseBtn",
                           "width": 24,
@@ -2098,6 +2260,119 @@
                       "fontFamily": "Inter",
                       "fontSize": 12,
                       "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "fLoZ0",
+                      "name": "lc2R1Meta",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "e7Zrf",
+                          "name": "lc2R1Author",
+                          "fill": "#586069",
+                          "content": "John Doe",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "zIpVs",
+                          "name": "lc2R1Dot",
+                          "fill": "#d0d7de",
+                          "content": "•",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "beL0s",
+                          "name": "lc2R1Time",
+                          "fill": "#586069",
+                          "content": "3h ago",
+                          "fontFamily": "Inter",
+                          "fontSize": 11,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "9hsmm",
+                          "name": "lc2R1DeleteBtn",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "#ffffff",
+                          "cornerRadius": 3,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#e1e4e8"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "c5RyN",
+                              "name": "lc2R1DeleteIcon",
+                              "width": 12,
+                              "height": 12,
+                              "iconFontName": "trash-2",
+                              "iconFontFamily": "lucide",
+                              "fill": "#959da5"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Ave6j",
+                      "name": "lc2R1Reactions",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "v0i4h",
+                          "name": "lc2R1React",
+                          "height": 20,
+                          "fill": "#ffffff",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#e1e4e8"
+                          },
+                          "gap": 3,
+                          "padding": [
+                            2,
+                            6
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "JrxgJ",
+                              "name": "lc2R1Emoji",
+                              "content": "👍",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "OWmWy",
+                              "name": "lc2R1Count",
+                              "fill": "#24292e",
+                              "content": "2",
+                              "fontFamily": "Inter",
+                              "fontSize": 10,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 },
@@ -2387,6 +2662,33 @@
                               "fontFamily": "Inter",
                               "fontSize": 10,
                               "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "oa17s",
+                          "name": "lc3DeleteBtn",
+                          "width": 26,
+                          "height": 26,
+                          "fill": "#ffeef0",
+                          "cornerRadius": 4,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#fdaeb7"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "4GTRp",
+                              "name": "lc3DeleteIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "trash-2",
+                              "iconFontFamily": "lucide",
+                              "fill": "#d73a49"
                             }
                           ]
                         },

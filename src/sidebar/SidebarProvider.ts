@@ -321,6 +321,40 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
                     this._outputChannel.appendLine(`Navigate to: ${message.payload.filePath}:${message.payload.lineNumber}`);
                     this._navigateToFile(message.payload.filePath, message.payload.lineNumber);
                     break;
+
+                case 'deleteThread':
+                    this._outputChannel.appendLine(`Delete thread: ${message.payload.threadId}`);
+                    vscode.window
+                        .showWarningMessage(
+                            'Delete this thread? This will remove all replies.',
+                            { modal: true },
+                            'Delete'
+                        )
+                        .then(selection => {
+                            if (selection === 'Delete') {
+                                vscode.commands.executeCommand('openReview.deleteThreadById', message.payload.threadId);
+                            }
+                        });
+                    break;
+
+                case 'deleteComment':
+                    this._outputChannel.appendLine(`Delete comment: ${message.payload.commentId} (thread: ${message.payload.threadId})`);
+                    vscode.window
+                        .showWarningMessage(
+                            'Delete this reply?',
+                            { modal: true },
+                            'Delete'
+                        )
+                        .then(selection => {
+                            if (selection === 'Delete') {
+                                vscode.commands.executeCommand(
+                                    'openReview.deleteCommentById',
+                                    message.payload.threadId,
+                                    message.payload.commentId
+                                );
+                            }
+                        });
+                    break;
                     
                 default:
                     this._outputChannel.appendLine(`Unknown webview message type: ${(message as any).type}`);

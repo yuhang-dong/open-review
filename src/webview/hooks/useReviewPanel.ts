@@ -151,6 +151,31 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
             }
           });
           break;
+
+        case 'deleteThread':
+          vscode.postMessage({
+            type: 'deleteThread',
+            payload: {
+              threadId: action.threadId
+            }
+          });
+          break;
+
+        case 'deleteComment':
+          if (!action.payload?.commentId || typeof action.payload.commentId !== 'string') {
+            console.error('Invalid deleteComment payload: missing or invalid commentId');
+            setError('Cannot delete comment: invalid comment id');
+            return;
+          }
+
+          vscode.postMessage({
+            type: 'deleteComment',
+            payload: {
+              threadId: action.threadId,
+              commentId: action.payload.commentId
+            }
+          });
+          break;
           
         default:
           console.warn('Unknown thread action type:', action.type);

@@ -86,7 +86,7 @@ export interface FilteredThreadsResult {
  * Actions that can be performed on threads
  */
 export interface ThreadAction {
-  type: 'reply' | 'resolve' | 'reopen' | 'navigate';
+  type: 'reply' | 'resolve' | 'reopen' | 'navigate' | 'deleteThread' | 'deleteComment';
   threadId: string;
   payload?: any;
 }
@@ -138,6 +138,15 @@ export interface NavigateToLocationPayload {
   lineNumber: number;
 }
 
+export interface DeleteThreadPayload {
+  threadId: string;
+}
+
+export interface DeleteCommentPayload {
+  threadId: string;
+  commentId: string;
+}
+
 export interface ReadyPayload {
   // Empty payload for initialization
 }
@@ -158,4 +167,6 @@ export type WebviewMessage =
   | { type: 'resolveThread'; payload: ResolveThreadPayload }
   | { type: 'reopenThread'; payload: ReopenThreadPayload }
   | { type: 'navigateToLocation'; payload: NavigateToLocationPayload }
+  | { type: 'deleteThread'; payload: DeleteThreadPayload }
+  | { type: 'deleteComment'; payload: DeleteCommentPayload }
   | { type: 'ready'; payload: ReadyPayload };

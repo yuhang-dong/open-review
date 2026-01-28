@@ -112,6 +112,14 @@ export function activate(context: vscode.ExtensionContext) {
 		commentCommands.replyToThread(threadId, content, authorName);
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteThreadById', (threadId: string) => {
+		commentCommands.deleteThreadById(threadId);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteCommentById', (threadId: string, commentId: string) => {
+		commentCommands.deleteCommentById(threadId, commentId);
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.exportAllThread', async () => {
 		const allThreads = threadManager.getAllThreads();
 		const copyableStringFromThreads = exportThreadsAsMarkdown(allThreads);
