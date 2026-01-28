@@ -18,13 +18,19 @@
             "type": "extensionHost",
             "request": "launch",
             "args": [
+                "${workspaceFolder}/test-workspace",
                 "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index",
+                "--disable-extensions",
+                "--disable-gpu"
             ],
             "outFiles": [
                 "${workspaceFolder}/out/test/**/*.js"
             ],
-            "preLaunchTask": "${workspaceFolder}/npm: pretest"
+            "preLaunchTask": "${workspaceFolder}/npm: pretest",
+            "env": {
+                "OPEN_REVIEW_TEST_MODE": "true"
+            }
         }
     ]
 }
