@@ -37,13 +37,13 @@
     },
     "commands": [
       {
-        "command": "openReview.createNote",
+        "command": "openReview.createComment",
         "title": "Create Comment",
         "category": "Open Review"
       },
       {
-        "command": "openReview.replyNote",
-        "title": "Reply Note",
+        "command": "openReview.replyComment",
+        "title": "Reply Comment",
         "category": "Open Review"
       },
       {
@@ -57,33 +57,33 @@
         "category": "Open Review"
       },
       {
-        "command": "openReview.deleteNoteComment",
-        "title": "Delete Note Comment",
-        "category": "Open Review"
-      },
-      {
-        "command": "openReview.deleteNote",
+        "command": "openReview.deleteComment",
         "title": "Delete Comment",
         "category": "Open Review"
       },
       {
-        "command": "openReview.cancelsaveNote",
-        "title": "Cancel Save Note",
+        "command": "openReview.deleteThread",
+        "title": "Delete Thread",
         "category": "Open Review"
       },
       {
-        "command": "openReview.saveNote",
-        "title": "Save Note",
+        "command": "openReview.cancelSaveComment",
+        "title": "Cancel Save Comment",
         "category": "Open Review"
       },
       {
-        "command": "openReview.editNote",
-        "title": "Edit Note",
+        "command": "openReview.saveComment",
+        "title": "Save Comment",
         "category": "Open Review"
       },
       {
-        "command": "openReview.dispose",
-        "title": "Dispose Note",
+        "command": "openReview.editComment",
+        "title": "Edit Comment",
+        "category": "Open Review"
+      },
+      {
+        "command": "openReview.disposeComments",
+        "title": "Dispose Comments",
         "category": "Open Review"
       },
       {
@@ -99,37 +99,37 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "openReview.createNote",
+          "command": "openReview.createComment",
           "when": "false"
         },
         {
-          "command": "openReview.replyNote",
+          "command": "openReview.replyComment",
           "when": "false"
         },
         {
-          "command": "openReview.deleteNote",
+          "command": "openReview.deleteThread",
           "when": "false"
         },
         {
-          "command": "openReview.deleteNoteComment",
+          "command": "openReview.deleteComment",
           "when": "false"
         }
       ],
       "comments/commentThread/title": [
         {
-          "command": "openReview.deleteNote",
+          "command": "openReview.deleteThread",
           "group": "navigation",
           "when": "commentController == comment-sample && !commentThreadIsEmpty"
         }
       ],
       "comments/commentThread/context": [
         {
-          "command": "openReview.createNote",
+          "command": "openReview.createComment",
           "group": "inline",
           "when": "commentController == comment-sample && commentThreadIsEmpty"
         },
         {
-          "command": "openReview.replyNote",
+          "command": "openReview.replyComment",
           "group": "inline",
           "when": "commentController == comment-sample && !commentThreadIsEmpty"
         },
@@ -146,24 +146,24 @@
       ],
       "comments/comment/title": [
         {
-          "command": "openReview.editNote",
+          "command": "openReview.editComment",
           "group": "group@1",
           "when": "commentController == comment-sample"
         },
         {
-          "command": "openReview.deleteNoteComment",
+          "command": "openReview.deleteComment",
           "group": "group@2",
           "when": "commentController == comment-sample && comment == canDelete"
         }
       ],
       "comments/comment/context": [
         {
-          "command": "openReview.cancelsaveNote",
+          "command": "openReview.cancelSaveComment",
           "group": "inline@1",
           "when": "commentController == comment-sample"
         },
         {
-          "command": "openReview.saveNote",
+          "command": "openReview.saveComment",
           "group": "inline@2",
           "when": "commentController == comment-sample"
         }

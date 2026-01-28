@@ -59,11 +59,11 @@ export function activate(context: vscode.ExtensionContext) {
 	};
 
 	// Register all comment commands
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.createNote', (reply: vscode.CommentReply) => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.createComment', (reply: vscode.CommentReply) => {
 		commentCommands.createNote(reply);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.replyNote', (reply: vscode.CommentReply) => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.replyComment', (reply: vscode.CommentReply) => {
 		commentCommands.replyNote(reply);
 	}));
 
@@ -75,27 +75,27 @@ export function activate(context: vscode.ExtensionContext) {
 		commentCommands.finishDraft(reply);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteNoteComment', (comment: NoteComment) => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteComment', (comment: NoteComment) => {
 		commentCommands.deleteNoteComment(comment);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteNote', (thread: vscode.CommentThread) => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteThread', (thread: vscode.CommentThread) => {
 		commentCommands.deleteNote(thread as any);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.cancelsaveNote', (comment: NoteComment) => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.cancelSaveComment', (comment: NoteComment) => {
 		commentCommands.cancelSaveNote(comment);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.saveNote', (comment: NoteComment) => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.saveComment', (comment: NoteComment) => {
 		commentCommands.saveNote(comment);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.editNote', (comment: NoteComment) => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.editComment', (comment: NoteComment) => {
 		commentCommands.editNote(comment);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.dispose', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.disposeComments', () => {
 		commentController.dispose();
 	}));
 

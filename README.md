@@ -414,11 +414,11 @@ All available commands in the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`):
 |---------|-------------|----------------|
 | `Open Review: Create Comment` | Create a new comment thread at cursor/selection | Always |
 | `Open Review: Export Comments` | Export all threads to clipboard as Markdown | Always |
-| `Open Review: Reply Note` | Add a reply to the current thread | In comment thread |
+| `Open Review: Reply Comment` | Add a reply to the current thread | In comment thread |
 | `Open Review: Delete Comment` | Delete a specific comment | On comment |
-| `Open Review: Edit Note` | Edit an existing comment | On comment |
-| `Open Review: Save Note` | Save comment changes | While editing |
-| `Open Review: Cancel Save Note` | Discard comment changes | While editing |
+| `Open Review: Edit Comment` | Edit an existing comment | On comment |
+| `Open Review: Save Comment` | Save comment changes | While editing |
+| `Open Review: Cancel Save Comment` | Discard comment changes | While editing |
 | `Open Review: Start Draft` | Begin a draft comment | In empty thread |
 | `Open Review: Finish Draft` | Complete and post draft | In draft mode |
 
