@@ -1,9 +1,16 @@
 import * as vscode from 'vscode';
+import { ExtensionTestHelper } from './extensionHelpers';
 
 /**
  * Helper class for creating and manipulating comment threads in tests
  */
 export class ThreadTestHelper {
+	private extensionHelper: ExtensionTestHelper;
+
+	constructor(extensionHelper: ExtensionTestHelper) {
+		this.extensionHelper = extensionHelper;
+	}
+
 	/**
 	 * Sleep for specified milliseconds
 	 */
@@ -44,8 +51,63 @@ export class ThreadTestHelper {
 		// Wait for thread to be created
 		await this.sleep(100);
 		
-		// Return placeholder ID (will be implemented with actual thread retrieval)
-		return 'thread-id-placeholder';
+		// Get the thread ID from the thread manager
+		return this.getLatestThreadId(fileUri, line);
+	}
+
+	/**
+	 * Get the latest thread ID for a specific file and line
+	 */
+	private getLatestThreadId(fileUri: vscode.Uri, line: number): string {
+		const threadManager = this.extensionHelper.getThreadManager();
+		if (!threadManager) {
+			throw new Error('ThreadManager not available');
+		}
+
+		const allThreads = threadManager.getAllThreads();
+		
+		// Find the thread at the specified location
+		const thread = allThreads.find(t => 
+			t.uri.toString() === fileUri.toString() && 
+			t.range && t.range.start.line === line
+		);
+
+		if (!thread || !thread.customId) {
+			throw new Error(`Thread not found at ${fileUri.toString()}:${line}`);
+		}
+
+		return thread.customId;
+	}
+
+	/**
+	 * Get all thread IDs
+	 */
+	getAllThreadIds(): string[] {
+		const threadManager = this.extensionHelper.getThreadManager();
+		if (!threadManager) {
+			throw new Error('ThreadManager not available');
+		}
+
+		return threadManager.getAllThreads()
+			.map(t => t.customId)
+			.filter((id): id is string => id !== undefined);
+	}
+
+	/**
+	 * Get thread by ID
+	 */
+	getThreadById(threadId: string): any {
+		const threadManager = this.extensionHelper.getThreadManager();
+		if (!threadManager) {
+			throw new Error('ThreadManager not available');
+		}
+
+		const thread = threadManager.findThreadById(threadId);
+		if (!thread) {
+			throw new Error(`Thread ${threadId} not found`);
+		}
+
+		return thread;
 	}
 
 	/**
@@ -53,7 +115,7 @@ export class ThreadTestHelper {
 	 */
 	async replyToThread(threadId: string, content: string, author: string = 'Test User'): Promise<void> {
 		await vscode.commands.executeCommand(
-			'openReview.replyComment',
+			'openReview.replyToThread',
 			threadId,
 			content,
 			author
@@ -81,7 +143,15 @@ export class ThreadTestHelper {
 	 * Delete a thread
 	 */
 	async deleteThread(threadId: string): Promise<void> {
-		await vscode.commands.executeCommand('openReview.deleteThread', threadId);
+		await vscode.commands.executeCommand('openReview.deleteThreadById', threadId);
+		await this.sleep(50);
+	}
+
+	/**
+	 * Delete a specific comment from a thread
+	 */
+	async deleteComment(threadId: string, commentId: number): Promise<void> {
+		await vscode.commands.executeCommand('openReview.deleteCommentById', threadId, commentId);
 		await this.sleep(50);
 	}
 }

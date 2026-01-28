@@ -1,10 +1,19 @@
 import * as vscode from 'vscode';
+import { ThreadManager } from '../../utils/ThreadManager';
+import { SidebarProvider } from '../../sidebar/SidebarProvider';
+
+// Extension API interface
+interface ExtensionAPI {
+	threadManager: ThreadManager;
+	sidebarProvider: SidebarProvider;
+}
 
 /**
  * Helper class for interacting with the extension during tests
  */
 export class ExtensionTestHelper {
-	private extension: vscode.Extension<any> | undefined;
+	private extension: vscode.Extension<ExtensionAPI> | undefined;
+	private api: ExtensionAPI | undefined;
 
 	/**
 	 * Activate the extension and wait for it to be ready
@@ -16,7 +25,9 @@ export class ExtensionTestHelper {
 		}
 
 		if (!this.extension.isActive) {
-			await this.extension.activate();
+			this.api = await this.extension.activate();
+		} else {
+			this.api = this.extension.exports;
 		}
 
 		// Wait for extension to fully initialize
@@ -53,8 +64,22 @@ export class ExtensionTestHelper {
 	/**
 	 * Get the extension instance
 	 */
-	getExtension(): vscode.Extension<any> | undefined {
+	getExtension(): vscode.Extension<ExtensionAPI> | undefined {
 		return this.extension;
+	}
+
+	/**
+	 * Get the thread manager (for testing purposes)
+	 */
+	getThreadManager(): ThreadManager | undefined {
+		return this.api?.threadManager;
+	}
+
+	/**
+	 * Get the sidebar provider (for testing purposes)
+	 */
+	getSidebarProvider(): SidebarProvider | undefined {
+		return this.api?.sidebarProvider;
 	}
 
 	/**

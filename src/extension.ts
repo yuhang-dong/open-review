@@ -6,10 +6,16 @@ import { SidebarProvider } from './sidebar/SidebarProvider';
 import { ThreadManager } from './utils/ThreadManager';
 import { CommentCommands } from './utils/CommentCommands';
 
-export function activate(context: vscode.ExtensionContext) {
+// Export type for extension API
+export interface ExtensionAPI {
+	threadManager: ThreadManager;
+	sidebarProvider: SidebarProvider;
+}
+
+export function activate(context: vscode.ExtensionContext): ExtensionAPI {
 	console.log('Open Review extension is being activated...');
 
-	let sidebarProvider: SidebarProvider;
+	let sidebarProvider: SidebarProvider | undefined;
 
 	try {
 		// Register the webview provider
@@ -36,8 +42,10 @@ export function activate(context: vscode.ExtensionContext) {
 	// Initialize thread manager with webview update callback
 	const threadManager = new ThreadManager(() => {
 		try {
-			const webviewThreads = threadManager.toWebviewFormat();
-			sidebarProvider.updateThreads(webviewThreads);
+			if (sidebarProvider) {
+				const webviewThreads = threadManager.toWebviewFormat();
+				sidebarProvider.updateThreads(webviewThreads);
+			}
 		} catch (error) {
 			console.error('Error updating webview threads:', error);
 		}
@@ -128,6 +136,12 @@ export function activate(context: vscode.ExtensionContext) {
 			`Exported ${allThreads.length} comments to clipboard`
 		);
 	}));
+
+	// Return API for testing
+	return {
+		threadManager,
+		sidebarProvider: sidebarProvider!
+	};
 }
 
 export function deactivate() {
