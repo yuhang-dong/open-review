@@ -57,13 +57,16 @@ export class ThreadManager {
 	 * Add a new thread
 	 */
 	public addThread(thread: ExtendedCommentThread): void {
+		// Ensure thread has a stable id as soon as it becomes managed.
+		// (Also covers the "already exists" early-return path.)
+		this.initializeThread(thread);
+
 		// Don't add if already exists
 		if (this.threads.includes(thread)) {
 			this.updateThreadTimestamp(thread);
 			return;
 		}
 		
-		this.initializeThread(thread);
 		this.threads.push(thread);
 		this.notifyChange();
 	}
@@ -191,7 +194,7 @@ export class ThreadManager {
 			const range = thread.range;
 			
 			return {
-				id: thread.customId || `fallback-${thread.uri.toString()}-${range?.start.line || 0}`,
+				id: thread.customId!,
 				filePath: vscode.workspace.asRelativePath(thread.uri),
 				lineNumber: range ? range.start.line + 1 : 1,
 				// Support range display - include end line if it's a multi-line range
@@ -208,8 +211,9 @@ export class ThreadManager {
 				comments: thread.comments.map((comment, index) => {
 					const reviewComment = comment as ReviewComment;
 					return {
-						id: `${thread.customId}:comment:${reviewComment.id}`,
-						threadId: thread.customId || '',
+						// Use the host-side numeric comment id directly (keep consistent across host & webview)
+						id: reviewComment.id,
+						threadId: thread.customId!,
 						content: typeof comment.body === 'string' ? comment.body : comment.body.value,
 						author: {
 							name: comment.author.name,
@@ -218,7 +222,7 @@ export class ThreadManager {
 						// Use stored creation date from ReviewComment
 						createdAt: reviewComment.createdAt,
 						isReply: index > 0,
-						parentCommentId: index > 0 ? `${thread.customId}:comment:${(thread.comments[0] as ReviewComment).id}` : undefined
+						parentCommentId: index > 0 ? (thread.comments[0] as ReviewComment).id : undefined
 					};
 				}),
 				// Use stored dates from thread

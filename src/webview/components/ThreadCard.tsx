@@ -132,7 +132,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onAction, isExpanded: i
   /**
    * Handle deleting a reply/comment (small gray delete)
    */
-  const handleDeleteComment = (commentId: string) => {
+  const handleDeleteComment = (commentId: number) => {
     onAction({
       type: 'deleteComment',
       threadId: thread.id,

@@ -162,7 +162,7 @@ export function useReviewPanel(vscode: VSCodeAPIWrapper) {
           break;
 
         case 'deleteComment':
-          if (!action.payload?.commentId || typeof action.payload.commentId !== 'string') {
+          if (action.payload?.commentId === undefined || typeof action.payload.commentId !== 'number') {
             console.error('Invalid deleteComment payload: missing or invalid commentId');
             setError('Cannot delete comment: invalid comment id');
             return;

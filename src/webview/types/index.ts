@@ -28,13 +28,13 @@ export interface Author {
  * Individual comment within a thread
  */
 export interface Comment {
-  id: string;
+  id: number;
   threadId: string;
   content: string;
   author: Author;
   createdAt: Date;
   isReply: boolean;
-  parentCommentId?: string;
+  parentCommentId?: number;
 }
 
 /**
@@ -144,7 +144,7 @@ export interface DeleteThreadPayload {
 
 export interface DeleteCommentPayload {
   threadId: string;
-  commentId: string;
+  commentId: number;
 }
 
 export interface ReadyPayload {

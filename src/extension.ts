@@ -116,7 +116,7 @@ export function activate(context: vscode.ExtensionContext) {
 		commentCommands.deleteThreadById(threadId);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteCommentById', (threadId: string, commentId: string) => {
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteCommentById', (threadId: string, commentId: number) => {
 		commentCommands.deleteCommentById(threadId, commentId);
 	}));
 

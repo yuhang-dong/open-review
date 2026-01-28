@@ -6,16 +6,8 @@ import { getUserName } from './getUserName';
 export class CommentCommands {
 	constructor(private threadManager: ThreadManager) {}
 
-	private parseNumericCommentIdFromWebviewCommentId(webviewCommentId: string): number | null {
-		// Expected format from ThreadManager.toWebviewFormat():
-		// `${thread.customId}:comment:${comment.id}`
-		const match = /:comment:(\d+)$/.exec(webviewCommentId);
-		if (!match) {
-			return null;
-		}
-
-		const numericId = Number(match[1]);
-		return Number.isFinite(numericId) ? numericId : null;
+	private ensureValidCommentId(commentId: number): number | null {
+		return Number.isFinite(commentId) ? commentId : null;
 	}
 
 	/**
@@ -117,13 +109,13 @@ export class CommentCommands {
 	/**
 	 * Delete a specific reply/comment from webview, by threadId + webview commentId
 	 */
-	public deleteCommentById(threadId: string, commentId: string): void {
+	public deleteCommentById(threadId: string, commentId: number): void {
 		const thread = this.threadManager.findThreadById(threadId);
 		if (!thread) {
 			return;
 		}
 
-		const numericCommentId = this.parseNumericCommentIdFromWebviewCommentId(commentId);
+		const numericCommentId = this.ensureValidCommentId(commentId);
 		if (numericCommentId === null) {
 			return;
 		}
