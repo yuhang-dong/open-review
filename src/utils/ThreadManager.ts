@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { NoteComment } from '../types/NoteComment';
+import { ReviewComment } from '../types/ReviewComment';
 import { CommentThread } from '../webview/types';
 
 // Extend CommentThread with our custom properties
@@ -103,7 +103,7 @@ export class ThreadManager {
 	/**
 	 * Add comment to thread
 	 */
-	public addCommentToThread(thread: ExtendedCommentThread, comment: NoteComment): void {
+	public addCommentToThread(thread: ExtendedCommentThread, comment: ReviewComment): void {
 		// If thread is not managed yet, add it first
 		if (!this.threads.includes(thread)) {
 			this.addThread(thread);
@@ -117,7 +117,7 @@ export class ThreadManager {
 	 * Remove comment from thread
 	 */
 	public removeCommentFromThread(thread: ExtendedCommentThread, commentId: number): void {
-		thread.comments = thread.comments.filter(cmt => (cmt as NoteComment).id !== commentId);
+		thread.comments = thread.comments.filter(cmt => (cmt as ReviewComment).id !== commentId);
 		
 		if (thread.comments.length === 0) {
 			thread.dispose();
@@ -132,8 +132,8 @@ export class ThreadManager {
 	 */
 	public saveCommentInThread(thread: ExtendedCommentThread, commentId: number): void {
 		thread.comments = thread.comments.map(cmt => {
-			if ((cmt as NoteComment).id === commentId) {
-				(cmt as NoteComment).save();
+			if ((cmt as ReviewComment).id === commentId) {
+				(cmt as ReviewComment).save();
 				cmt.mode = vscode.CommentMode.Preview;
 			}
 			return cmt;
@@ -173,7 +173,7 @@ export class ThreadManager {
 	public replyToThread(customId: string, content: string, authorName: string): void {
 		const thread = this.findThreadById(customId);
 		if (thread) {
-			const newComment = new NoteComment(
+			const newComment = new ReviewComment(
 				content, 
 				vscode.CommentMode.Preview, 
 				{ name: authorName }, 
@@ -206,19 +206,19 @@ export class ThreadManager {
 					return 'open' as const;
 				})(),
 				comments: thread.comments.map((comment, index) => {
-					const noteComment = comment as NoteComment;
+					const reviewComment = comment as ReviewComment;
 					return {
-						id: `${thread.customId}:comment:${noteComment.id}`,
+						id: `${thread.customId}:comment:${reviewComment.id}`,
 						threadId: thread.customId || '',
 						content: typeof comment.body === 'string' ? comment.body : comment.body.value,
 						author: {
 							name: comment.author.name,
 							avatarUrl: comment.author.iconPath?.toString()
 						},
-						// Use stored creation date from NoteComment
-						createdAt: noteComment.createdAt,
+						// Use stored creation date from ReviewComment
+						createdAt: reviewComment.createdAt,
 						isReply: index > 0,
-						parentCommentId: index > 0 ? `${thread.customId}:comment:${(thread.comments[0] as NoteComment).id}` : undefined
+						parentCommentId: index > 0 ? `${thread.customId}:comment:${(thread.comments[0] as ReviewComment).id}` : undefined
 					};
 				}),
 				// Use stored dates from thread

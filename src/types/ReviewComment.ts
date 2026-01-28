@@ -2,13 +2,19 @@ import * as vscode from 'vscode';
 
 let commentId = 1;
 
-export class NoteComment implements vscode.Comment {
+/**
+ * Canonical comment model used by Open Review.
+ *
+ * NOTE: This was previously named `NoteComment`. We keep `NoteComment` as an
+ * alias during migration to avoid breaking imports.
+ */
+export class ReviewComment implements vscode.Comment {
 	id: number;
 	label: string | undefined;
 	savedBody: string | vscode.MarkdownString; // for the Cancel button
 	createdAt: Date;
 	updatedAt: Date;
-	
+
 	constructor(
 		public body: string | vscode.MarkdownString,
 		public mode: vscode.CommentMode,

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { CONTROLLER_ID, CONTROLLER_LABEL } from './constants/common';
 import { exportThreadsAsMarkdown } from './utils/parseCopyableStringFromThreads';
-import { NoteComment } from './types/NoteComment';
+import { ReviewComment } from './types/ReviewComment';
 import { SidebarProvider } from './sidebar/SidebarProvider';
 import { ThreadManager } from './utils/ThreadManager';
 import { CommentCommands } from './utils/CommentCommands';
@@ -60,11 +60,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register all comment commands
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.createComment', (reply: vscode.CommentReply) => {
-		commentCommands.createNote(reply);
+		commentCommands.createThread(reply);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.replyComment', (reply: vscode.CommentReply) => {
-		commentCommands.replyNote(reply);
+		commentCommands.replyComment(reply);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.startDraft', (reply: vscode.CommentReply) => {
@@ -75,24 +75,24 @@ export function activate(context: vscode.ExtensionContext) {
 		commentCommands.finishDraft(reply);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteComment', (comment: NoteComment) => {
-		commentCommands.deleteNoteComment(comment);
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteComment', (comment: ReviewComment) => {
+		commentCommands.deleteComment(comment);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.deleteThread', (thread: vscode.CommentThread) => {
-		commentCommands.deleteNote(thread as any);
+		commentCommands.deleteThread(thread as any);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.cancelSaveComment', (comment: NoteComment) => {
-		commentCommands.cancelSaveNote(comment);
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.cancelSaveComment', (comment: ReviewComment) => {
+		commentCommands.cancelSaveComment(comment);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.saveComment', (comment: NoteComment) => {
-		commentCommands.saveNote(comment);
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.saveComment', (comment: ReviewComment) => {
+		commentCommands.saveComment(comment);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('openReview.editComment', (comment: NoteComment) => {
-		commentCommands.editNote(comment);
+	context.subscriptions.push(vscode.commands.registerCommand('openReview.editComment', (comment: ReviewComment) => {
+		commentCommands.editComment(comment);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.disposeComments', () => {

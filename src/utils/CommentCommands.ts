@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
-import { NoteComment } from '../types/NoteComment';
+import { ReviewComment } from '../types/ReviewComment';
 import { ThreadManager, ExtendedCommentThread } from './ThreadManager';
 import { getUserName } from './getUserName';
 
 export class CommentCommands {
 	constructor(private threadManager: ThreadManager) {}
 
-	private parseNumericNoteCommentIdFromWebviewCommentId(webviewCommentId: string): number | null {
+	private parseNumericCommentIdFromWebviewCommentId(webviewCommentId: string): number | null {
 		// Expected format from ThreadManager.toWebviewFormat():
-		// `${thread.customId}:comment:${noteComment.id}`
+		// `${thread.customId}:comment:${comment.id}`
 		const match = /:comment:(\d+)$/.exec(webviewCommentId);
 		if (!match) {
 			return null;
@@ -19,20 +19,20 @@ export class CommentCommands {
 	}
 
 	/**
-	 * Create a new note/thread
+	 * Create a new thread with an initial comment.
 	 */
-	public createNote(reply: vscode.CommentReply): void {
-		this.replyNote(reply);
+	public createThread(reply: vscode.CommentReply): void {
+		this.replyComment(reply);
 		const thread = reply.thread as ExtendedCommentThread;
 		this.threadManager.addThread(thread);
 	}
 
 	/**
-	 * Reply to an existing note/thread
+	 * Reply to an existing thread.
 	 */
-	public replyNote(reply: vscode.CommentReply): void {
+	public replyComment(reply: vscode.CommentReply): void {
 		const thread = reply.thread as ExtendedCommentThread;
-		const newComment = new NoteComment(
+		const newComment = new ReviewComment(
 			new vscode.MarkdownString(reply.text), 
 			vscode.CommentMode.Preview, 
 			{ name: getUserName() }, 
@@ -53,7 +53,7 @@ export class CommentCommands {
 	public startDraft(reply: vscode.CommentReply): void {
 		const thread = reply.thread as ExtendedCommentThread;
 		thread.contextValue = 'draft';
-		const newComment = new NoteComment(reply.text, vscode.CommentMode.Preview, { name: getUserName() }, thread);
+		const newComment = new ReviewComment(reply.text, vscode.CommentMode.Preview, { name: getUserName() }, thread);
 		newComment.label = 'pending';
 		
 		this.threadManager.addCommentToThread(thread, newComment);
@@ -73,7 +73,7 @@ export class CommentCommands {
 		thread.collapsibleState = vscode.CommentThreadCollapsibleState.Collapsed;
 		
 		if (reply.text) {
-			const newComment = new NoteComment(reply.text, vscode.CommentMode.Preview, { name: getUserName() }, thread);
+			const newComment = new ReviewComment(reply.text, vscode.CommentMode.Preview, { name: getUserName() }, thread);
 			thread.comments = [...thread.comments, newComment].map(comment => {
 				comment.label = undefined;
 				return comment;
@@ -86,7 +86,7 @@ export class CommentCommands {
 	/**
 	 * Delete a comment from a thread
 	 */
-	public deleteNoteComment(comment: NoteComment): void {
+	public deleteComment(comment: ReviewComment): void {
 		const thread = comment.parent as ExtendedCommentThread;
 		if (!thread) {
 			return;
@@ -98,7 +98,7 @@ export class CommentCommands {
 	/**
 	 * Delete an entire thread
 	 */
-	public deleteNote(thread: ExtendedCommentThread): void {
+	public deleteThread(thread: ExtendedCommentThread): void {
 		thread.dispose();
 		this.threadManager.removeThread(thread);
 	}
@@ -111,7 +111,7 @@ export class CommentCommands {
 		if (!thread) {
 			return;
 		}
-		this.deleteNote(thread);
+		this.deleteThread(thread);
 	}
 
 	/**
@@ -123,7 +123,7 @@ export class CommentCommands {
 			return;
 		}
 
-		const numericCommentId = this.parseNumericNoteCommentIdFromWebviewCommentId(commentId);
+		const numericCommentId = this.parseNumericCommentIdFromWebviewCommentId(commentId);
 		if (numericCommentId === null) {
 			return;
 		}
@@ -132,16 +132,16 @@ export class CommentCommands {
 	}
 
 	/**
-	 * Cancel saving a note (revert changes)
+	 * Cancel saving a comment (revert changes)
 	 */
-	public cancelSaveNote(comment: NoteComment): void {
+	public cancelSaveComment(comment: ReviewComment): void {
 		if (!comment.parent) {
 			return;
 		}
 
 		comment.parent.comments = comment.parent.comments.map(cmt => {
-			if ((cmt as NoteComment).id === comment.id) {
-				cmt.body = (cmt as NoteComment).savedBody;
+			if ((cmt as ReviewComment).id === comment.id) {
+				cmt.body = (cmt as ReviewComment).savedBody;
 				cmt.mode = vscode.CommentMode.Preview;
 			}
 			return cmt;
@@ -149,9 +149,9 @@ export class CommentCommands {
 	}
 
 	/**
-	 * Save a note
+	 * Save a comment
 	 */
-	public saveNote(comment: NoteComment): void {
+	public saveComment(comment: ReviewComment): void {
 		const thread = comment.parent as ExtendedCommentThread;
 		if (!thread) {
 			return;
@@ -161,15 +161,15 @@ export class CommentCommands {
 	}
 
 	/**
-	 * Edit a note
+	 * Edit a comment
 	 */
-	public editNote(comment: NoteComment): void {
+	public editComment(comment: ReviewComment): void {
 		if (!comment.parent) {
 			return;
 		}
 
 		comment.parent.comments = comment.parent.comments.map(cmt => {
-			if ((cmt as NoteComment).id === comment.id) {
+			if ((cmt as ReviewComment).id === comment.id) {
 				cmt.mode = vscode.CommentMode.Editing;
 			}
 			return cmt;
