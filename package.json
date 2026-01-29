@@ -2,7 +2,7 @@
   "name": "open-review",
   "displayName": "Open Review",
   "description": "A unified review workflow for managing human-generated comments and AI responses",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "openreview",
   "icon": "asserts/icon.png",
   "engines": {
