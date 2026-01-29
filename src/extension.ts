@@ -129,7 +129,7 @@ export function activate(context: vscode.ExtensionContext): ExtensionAPI {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('openReview.exportAllThread', async () => {
-		const allThreads = threadManager.getAllThreads();
+		const allThreads = threadManager.getAllThreads().filter(thread => thread.state !== vscode.CommentThreadState.Resolved);
 		const copyableStringFromThreads = exportThreadsAsMarkdown(allThreads);
 		await vscode.env.clipboard.writeText(copyableStringFromThreads);
 		vscode.window.showInformationMessage(
